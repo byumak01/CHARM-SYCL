@@ -80,9 +80,9 @@ struct decl_visitor : decl_visitor_base<decl_visitor, void> {
 
         auto const name = info_.encode_name(decl);
         auto const linkage = decl->getLinkageAndVisibility().getLinkage();
-        auto const is_static = linkage == clang::Linkage::InternalLinkage ||
-                               linkage == clang::Linkage::UniqueExternalLinkage ||
-                               linkage == clang::Linkage::NoLinkage || decl->isInlined();
+        auto const is_static = linkage == clang::Linkage::Internal ||
+                               linkage == clang::Linkage::UniqueExternal ||
+                               linkage == clang::Linkage::None || decl->isInlined();
         auto const* method = clang::dyn_cast<clang::CXXMethodDecl>(decl);
         auto const* record = method ? method->getParent() : nullptr;
 

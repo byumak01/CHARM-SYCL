@@ -187,7 +187,7 @@ struct stmt_visitor final : stmt_visitor_base<stmt_visitor, void, xcml::expr_ptr
                 if (auto const* vd = clang::dyn_cast<clang::VarDecl>(ds->getSingleDecl())) {
                     for (auto const* attr : vd->attrs()) {
                         if (auto const* anno = clang::dyn_cast<clang::AnnotateAttr>(attr)) {
-                            if (anno->getAnnotation().startswith("charm_sycl_parallel_for ")) {
+                            if (anno->getAnnotation().starts_with("charm_sycl_parallel_for ")) {
                                 return VisitForStmt_2(stmt, anno->getAnnotation());
                             }
                         }

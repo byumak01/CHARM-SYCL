@@ -139,7 +139,7 @@ public:                                                                         
         if (auto const* method = clang::dyn_cast<clang::CXXMethodDecl>(expr->getCalleeDecl());
             method &&
             (method->isCopyAssignmentOperator() || method->isMoveAssignmentOperator())) {
-            auto const type = method->getThisObjectType();
+            auto const type = method->getThisType();
 
             if (type.isTriviallyCopyableType(ast_)) {
                 return create_assign_expr(expr, expr->getArg(0), expr->getArg(1));

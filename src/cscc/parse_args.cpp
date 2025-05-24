@@ -2,6 +2,7 @@
 #include <utils/io.hpp>
 #include <utils/target.hpp>
 #include "config.hpp"
+#include <algorithm>
 
 namespace {
 

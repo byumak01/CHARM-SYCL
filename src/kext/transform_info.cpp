@@ -57,7 +57,7 @@ struct transform_info::impl {
         llvm::raw_string_ostream os(name);
 
         name.reserve(32);
-        m->mangleTypeName(type, os);
+        m->mangleCXXRTTI(type, os);
 
         assert(name.size() > 2 && name.substr(0, 2) == "_Z");
         return "__s_" + name.substr(2);
@@ -85,7 +85,7 @@ struct transform_info::impl {
             return encode_name(clang::GlobalDecl(ctor, clang::Ctor_Complete));
         }
         if (auto fd = clang::dyn_cast<clang::FunctionDecl>(decl)) {
-            if (fd->getDeclName().isIdentifier() && fd->getName().startswith("__charm_sycl_")) {
+            if (fd->getDeclName().isIdentifier() && fd->getName().starts_with("__charm_sycl_")) {
                 std::string nns;
                 llvm::raw_string_ostream stream(nns);
                 fd->printNestedNameSpecifier(stream);

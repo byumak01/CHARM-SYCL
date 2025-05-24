@@ -1,4 +1,5 @@
 import io
+import os
 import re
 import sys
 
@@ -37,6 +38,7 @@ class Template:
         buffer = io.StringIO()
         self.render_to(buffer, context, **kwargs)
         data = buffer.getvalue()
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
         with open(filename, "w") as f:
             f.write(data)
 

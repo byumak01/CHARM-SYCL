@@ -206,10 +206,10 @@ add_library(
 
     # Boost.Context
     # TODO more architectures and ABIs
-    ${PROJECT_SOURCE_DIR}/vendor/boost/context/src/posix/stack_traits.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/boost/context/src/asm/make_${arch}_gas.S
-    ${PROJECT_SOURCE_DIR}/vendor/boost/context/src/asm/jump_${arch}_gas.S
-    ${PROJECT_SOURCE_DIR}/vendor/boost/context/src/asm/ontop_${arch}_gas.S
+    ${PROJECT_SOURCE_DIR}/vendor/boost-context/src/posix/stack_traits.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/boost-context/src/asm/make_${arch}_gas.S
+    ${PROJECT_SOURCE_DIR}/vendor/boost-context/src/asm/jump_${arch}_gas.S
+    ${PROJECT_SOURCE_DIR}/vendor/boost-context/src/asm/ontop_${arch}_gas.S
 )
 
 target_link_libraries(

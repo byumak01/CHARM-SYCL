@@ -1,6 +1,7 @@
 .vscode
 .DS_Store
 /build
+build_llvm18
 __pycache__
 generated/.clang-format
 generated/Cargo.lock

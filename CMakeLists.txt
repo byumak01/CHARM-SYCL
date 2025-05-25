@@ -60,6 +60,8 @@ find_package(Clang REQUIRED CONFIG)
 find_package(Threads)
 find_package(Python COMPONENTS Interpreter REQUIRED)
 
+message(${LLVM_PACKAGE_VERSION})
+
 if(NOT CMAKE_C_COMPILER_ID STREQUAL Clang)
     message(FATAL_ERROR "The C compiler is not clang: ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION}")
 endif()
@@ -68,16 +70,16 @@ if(NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang)
     message(FATAL_ERROR "The C++ compiler is not clang: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 endif()
 
-if(LLVM_VERSION_MAJOR LESS 13)
-    message(FATAL_ERROR "requires LLVM >= 13 (${LLVM_PACKAGE_VERSION})")
+if(LLVM_VERSION_MAJOR LESS 13 OR LLVM_VERSION_MAJOR GREATER 18)
+  message(FATAL_ERROR "requires LLVM >= 13 and < 19 (${LLVM_PACKAGE_VERSION})")
 endif()
 
 if(NOT CMAKE_C_COMPILER_VERSION MATCHES "^${LLVM_VERSION_MAJOR}\.")
-    message(FATAL_ERROR "The clang compiler version is not matched with the LLVM vesrion: clang=${CMAKE_C_COMPILER_VERSION}, llvm=${LLVM_PACKAGE_VERSION}")
+    message(FATAL_ERROR "The clang compiler version is not matched with the LLVM version: clang=${CMAKE_C_COMPILER_VERSION}, llvm=${LLVM_PACKAGE_VERSION}")
 endif()
 
 if(NOT CMAKE_CXX_COMPILER_VERSION MATCHES "^${LLVM_VERSION_MAJOR}\.")
-    message(FATAL_ERROR "The clang++ compiler version is not matched with the LLVM vesrion: clang++=${CMAKE_CXX_COMPILER_VERSION}, llvm=${LLVM_PACKAGE_VERSION}")
+    message(FATAL_ERROR "The clang++ compiler version is not matched with the LLVM version: clang++=${CMAKE_CXX_COMPILER_VERSION}, llvm=${LLVM_PACKAGE_VERSION}")
 endif()
 
 if(NOT CSCC_PORTABLE_MODE)

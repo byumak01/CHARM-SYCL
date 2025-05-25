@@ -188,9 +188,9 @@ struct stmt_visitor final : stmt_visitor_base<stmt_visitor, void, xcml::expr_ptr
                     for (auto const* attr : vd->attrs()) {
                         if (auto const* anno = clang::dyn_cast<clang::AnnotateAttr>(attr)) {
 #if LLVM_VERSION_MAJOR < 16
-                            if (fd->getDeclName().isIdentifier() && fd->getName().startswith("__charm_sycl_")) {
+                            if (anno->getAnnotation().startswith("charm_sycl_parallel_for ")) {
 #else
-                            if (fd->getDeclName().isIdentifier() && fd->getName().starts_with("__charm_sycl_")) {
+                            if (anno->getAnnotation().starts_with("charm_sycl_parallel_for ")) { 
 #endif
                                 return VisitForStmt_2(stmt, anno->getAnnotation());
                             }

@@ -139,8 +139,11 @@ public:                                                                         
         if (auto const* method = clang::dyn_cast<clang::CXXMethodDecl>(expr->getCalleeDecl());
             method &&
             (method->isCopyAssignmentOperator() || method->isMoveAssignmentOperator())) {
+#if LLVM_VERSION_MAJOR < 18
+            auto const type = method->getThisObjectType();
+#else
             auto const type = method->getThisType();
-
+#endif
             if (type.isTriviallyCopyableType(ast_)) {
                 return create_assign_expr(expr, expr->getArg(0), expr->getArg(1));
             }

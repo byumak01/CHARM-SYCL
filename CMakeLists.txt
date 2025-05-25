@@ -60,8 +60,6 @@ find_package(Clang REQUIRED CONFIG)
 find_package(Threads)
 find_package(Python COMPONENTS Interpreter REQUIRED)
 
-message(${LLVM_PACKAGE_VERSION})
-
 if(NOT CMAKE_C_COMPILER_ID STREQUAL Clang)
     message(FATAL_ERROR "The C compiler is not clang: ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION}")
 endif()
@@ -156,6 +154,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(CheckCXXCompilerFlag)
 include(CheckIncludeFile)
 
+add_compile_definitions(LLVM_VERSION_MAJOR=${LLVM_VERSION_MAJOR})
 add_compile_options(-Wall -Wextra)
 
 if(CHARM_SYCL_ENABLE_WERROR)

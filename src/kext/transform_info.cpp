@@ -57,8 +57,11 @@ struct transform_info::impl {
         llvm::raw_string_ostream os(name);
 
         name.reserve(32);
+#if LLVM_VERSION_MAJOR < 17
+        m->mangleTypeName(type, os);
+#else
         m->mangleCXXRTTI(type, os);
-
+#endif
         assert(name.size() > 2 && name.substr(0, 2) == "_Z");
         return "__s_" + name.substr(2);
     }

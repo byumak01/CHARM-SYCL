@@ -88,7 +88,11 @@ struct transform_info::impl {
             return encode_name(clang::GlobalDecl(ctor, clang::Ctor_Complete));
         }
         if (auto fd = clang::dyn_cast<clang::FunctionDecl>(decl)) {
+#if LLVM_VERSION_MAJOR < 16
+            if (fd->getDeclName().isIdentifier() && fd->getName().startswith("__charm_sycl_")) {
+#else
             if (fd->getDeclName().isIdentifier() && fd->getName().starts_with("__charm_sycl_")) {
+#endif
                 std::string nns;
                 llvm::raw_string_ostream stream(nns);
                 fd->printNestedNameSpecifier(stream);

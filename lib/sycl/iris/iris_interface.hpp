@@ -283,6 +283,7 @@ public:
 
 private:
     static void* handle_;
+    static void* distributed_iris_handle_;
 };
 
 }  // namespace runtime

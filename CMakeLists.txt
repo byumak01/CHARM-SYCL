@@ -174,14 +174,14 @@ if(USE_IRIS OR IRIS_DIR)
         message("-- IRIS_DIR: ${IRIS_DIR}")
     endif()
 
-    find_library(IRIS_LIBRARY NAMES iris PATHS ${IRIS_DIR}/lib)
+    find_library(IRIS_LIBRARY NAMES iris PATHS ${IRIS_DIR})
 endif()
 
 if(IRIS_LIBRARY)
     set(USE_IRIS YES)
 
     message("-- IRIS library found: ${IRIS_LIBRARY}")
-    file(REAL_PATH "${IRIS_LIBRARY}/../.." IRIS_ROOT)
+    file(REAL_PATH "${IRIS_LIBRARY}/../../../.." IRIS_ROOT)
     set(IRIS_INCLUDE_DIR "${IRIS_ROOT}/include")
 
     message("-- IRIS_ROOT: ${IRIS_ROOT}")

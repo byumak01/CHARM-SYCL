@@ -27,7 +27,7 @@ result<io::file> compile_kernel_cuda(config const& cfg, io::file const& input, c
     std::vector<std::string> cmd(
         {BOOST_LEAF_CHECK(cfg.nvcc()), "-c", "-o", out.filename(), input.filename()});
 
-    cmd.push_back("-std=c++11");
+    cmd.push_back("-std=c++17");
 
     // FIXME:
     // Disable warning #550: set but unused veriable

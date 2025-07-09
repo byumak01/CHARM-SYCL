@@ -46,6 +46,7 @@
 #include <charm/sycl/runtime/property.hpp>
 // clang-format on
 
+#include <charm/sycl/malloc_device.hpp>
 #include <charm/sycl/accessor.hpp>
 #include <charm/sycl/buffer.hpp>
 #include <charm/sycl/context.hpp>
@@ -76,6 +77,7 @@
 #include <charm/sycl/runtime/platform.hpp>
 #include <charm/sycl/runtime/queue.hpp>
 //
+#include <charm/sycl/malloc_device.ipp>
 #include <charm/sycl/buffer.ipp>
 #include <charm/sycl/context.ipp>
 #include <charm/sycl/device.ipp>

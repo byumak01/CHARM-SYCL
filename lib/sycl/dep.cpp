@@ -130,6 +130,10 @@ struct dependency_manager_impl final : std::enable_shared_from_this<dependency_m
 
     std::shared_ptr<dep::task> new_task() override;
 
+    // TODO, bymk: probably I will need to add sth like:
+    // std::unique_ptr<dep::malloc> new_malloc(args) override;
+    // for malloc allocations
+
     std::unique_ptr<dep::buffer> new_buffer(void* h_ptr, size_t element_size,
                                             rts::range size) override;
 
@@ -343,7 +347,6 @@ struct task_impl final : dep::task {
 
         rts_->depends_on(ev);
     }
-
     void depends_on(std::shared_ptr<dep::task> const& task) override {
         DEBUG_FMT("task[{}] {} (this={})", format::ptr(rts_.get()), __func__,
                   format::ptr(this));

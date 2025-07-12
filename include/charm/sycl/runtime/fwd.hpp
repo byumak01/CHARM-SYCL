@@ -41,6 +41,8 @@ host_accessor_ptr make_host_accessor(buffer_ptr const& buf, range<3> range, id<3
 // TODO: Use Allocator
 buffer_ptr make_buffer(void* init_ptr, size_t elemsize, range<3> const& rng);
 
+void *new_malloc(size_t count, size_t type_size);
+
 handler_ptr make_handler(queue_ptr const&);
 
 queue_ptr make_queue(context_ptr const&, device_ptr const&,

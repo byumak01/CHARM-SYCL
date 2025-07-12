@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/SipHash" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-array" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-assert" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-config" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-container_hash" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-context" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-core" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-describe" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-integer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-leaf" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-move" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-mp11" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-pool" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-predef" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-smart_ptr" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-stacktrace" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-static_assert" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-throw_exception" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-type_traits" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/boost-winapi" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/chibi-scheme" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/cpp-peglib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/cxxopts" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/fmtlib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/msgpack-c" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/pugixml" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/thread-pool" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/ut" vcs="Git" />
+  </component>
+</project>

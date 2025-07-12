@@ -117,6 +117,7 @@ endif()
 add_library(
     sycl
 
+    malloc.cpp
     accessor.cpp
     blas/blas.cpp
     buffer.cpp

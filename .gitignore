@@ -10,3 +10,4 @@ gitmodules
 .cache
 build_dev
 .idea
+CMakePresets.json

@@ -9,3 +9,4 @@ generated/target
 gitmodules
 .cache
 build_dev
+.idea

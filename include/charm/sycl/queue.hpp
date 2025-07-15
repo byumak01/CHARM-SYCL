@@ -60,6 +60,19 @@ struct queue {
     // template <typename Param>
     // typename Param::return_type get_backend_info() const;
 
+    // TODO: support for signatures commented needs to be added.
+    // This is void memcpy(args) is just for test.
+    void memcpy(void* dest, void* src, size_t numBytes);
+    /*
+    sycl::event memcpy(void* dest, const void* src, size_t numBytes);
+    
+    sycl::event memcpy(void* dest, const void* src, size_t numBytes,
+                   sycl::event depEvent);
+
+    sycl::event memcpy(void* dest, const void* src, size_t numBytes,
+                   const std::vector<sycl::event>& depEvents);
+    */
+
     template <typename T>
     inline event submit(T cgf);
 

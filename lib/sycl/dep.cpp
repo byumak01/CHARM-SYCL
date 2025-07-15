@@ -276,6 +276,7 @@ struct buffer_impl final : dep::buffer {
     }
 
     void* get_pointer() override {
+        std::cout << "dep.cpp:279" << std::endl;
         return rts_->get_pointer();
     }
 

@@ -335,6 +335,7 @@ struct buffer_impl final : rts::buffer {
     }
 
     void* get_pointer() override {
+        std::cout << "iris_rts.cpp:338" << std::endl;
         return &mem_;
     }
 

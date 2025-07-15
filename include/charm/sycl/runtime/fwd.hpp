@@ -43,6 +43,7 @@ buffer_ptr make_buffer(void* init_ptr, size_t elemsize, range<3> const& rng);
 
 // bymk
 void memcpy(void* dest, void* src, size_t numBytes);
+void memcpy2(void* dest, void* src, size_t numBytes);
 void *new_malloc(size_t count, size_t type_size);
 
 handler_ptr make_handler(queue_ptr const&);

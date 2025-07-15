@@ -20,6 +20,7 @@ id<3> accessor_impl::get_offset() const {
 }
 
 void* accessor_impl::get_pointer() {
+    std::cout << "accessor.cpp:23" << std::endl;
     return buffer_->get_pointer();
 }
 

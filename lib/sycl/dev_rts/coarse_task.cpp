@@ -142,7 +142,7 @@ void coarse_task::commit(op_ptr&& op) {
     auto task = make_op_task(std::move(op));
 
     for (auto& d : depends_) {
-        DEBUG_FMT("\ttask {} runs after {}", format::ptr(task), format::ptr(d.get()));
+        DEBUG_FMT("\ttask {} runs after {}", format::ptr(task.get()), format::ptr(d.get()));
         task->runs_after(d);
     }
     depends_.clear();

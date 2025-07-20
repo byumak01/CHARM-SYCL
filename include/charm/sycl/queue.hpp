@@ -62,8 +62,7 @@ struct queue {
 
     // TODO: support for signatures commented needs to be added.
     // This is void memcpy(args) is just for test.
-    void memcpy(void* dest, void* src, size_t numBytes);
-    void memcpy2(void* dest, void* src, size_t numBytes);
+    void memcpy(void*& dest, void*& src, size_t numBytes);
     /*
     sycl::event memcpy(void* dest, const void* src, size_t numBytes);
     

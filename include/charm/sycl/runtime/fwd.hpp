@@ -42,7 +42,7 @@ host_accessor_ptr make_host_accessor(buffer_ptr const& buf, range<3> range, id<3
 buffer_ptr make_buffer(void* init_ptr, size_t elemsize, range<3> const& rng);
 
 // bymk
-void memcpy(void* dest, void* src, size_t numBytes);
+void memcpy(void*& dest, void*& src, size_t numBytes);
 void *new_malloc(size_t numBytes);
 
 handler_ptr make_handler(queue_ptr const&);

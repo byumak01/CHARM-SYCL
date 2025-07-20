@@ -58,12 +58,8 @@ inline device queue::get_device() const {
     return runtime::impl_access::from_impl<device>(impl_->get_device());
 }
 
-inline void queue::memcpy(void* dest, void* src, size_t numBytes){
+inline void queue::memcpy(void*& dest, void*& src, size_t numBytes){
     runtime::memcpy(dest, src, numBytes);
-}
-
-inline void queue::memcpy2(void* dest, void* src, size_t numBytes){
-    runtime::memcpy2(dest, src, numBytes);
 }
 
 template <typename T>

@@ -78,9 +78,13 @@ void memcpy(void*& dest, void*& src, size_t numBytes){
         void* d2h_ptr = std::malloc(numBytes);
         std::cout << "d2h_ptr before: "<< d2h_ptr << std::endl;
         d2h_ptr_map[dest] = d2h_ptr;
+        std::cout << "d2h_ptr_map updated: "<<  std::endl;
         //d2h ptr icin memory allocation ypailacak
-        auto d2h_obj = *((IRIS::mem_t*)dest);   
-        auto d2h = IRIS::iris_task_d2h(*task, d2h_obj, 0, numBytes, d2h_ptr);
+        auto* d2h_obj = new IRIS::mem_t;
+        std::cout << "d2h_obj created: "<< std::endl;
+        auto create_result = IRIS::iris_mem_create(numBytes, d2h_obj);
+        std::cout << "iris_mem created: "<< std::endl;
+        auto d2h = IRIS::iris_task_d2h(*task, *d2h_obj, 0, numBytes, d2h_ptr);
         std::cout << "d2h_ptr after: "<< d2h_ptr << std::endl;
         // d2h_ptr data structure a eklenecek.
         // ikinci asamada bu d2h_ptr memcpy e verilen destinationa verilecek (d2h icin)
@@ -88,8 +92,10 @@ void memcpy(void*& dest, void*& src, size_t numBytes){
         auto submit = IRIS::iris_task_submit(*task, IRIS::cpu, nullptr, 0);
     } 
     else {
+        std::cout << "else part" << std::endl;
         auto iter = d2h_ptr_map.find(src);
         if( iter != d2h_ptr_map.end()){
+            std::cout << "inside" << std::endl;
             dest = iter->second;
         }
         else {

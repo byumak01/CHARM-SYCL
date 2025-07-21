@@ -10,10 +10,12 @@ using IRIS = iris_interface_20000;
 
 // sycl::free will deallocate this map, it should work
 std::unordered_map<void*, IRIS::mem_t*> h2d_ptr_map;
+std::unordered_map<void*, IRIS::mem_t*> host_to_mem_ptr_map;
 std::unordered_map<void*, void*> d2h_ptr_map;
 
 void *new_malloc(size_t numBytes){
 
+   
     auto result = IRIS::init();
     std::cout << "After init" << std::endl;
    
@@ -26,17 +28,33 @@ void *new_malloc(size_t numBytes){
         delete mem;
         return nullptr;
     }
-
+    return mem;
+    /*
     auto* dummy_ptr = new char;
 
-    h2d_ptr_map[dummy_ptr] = mem;
+    //h2d_ptr_map[dummy_ptr] = mem;
     
     std::cout << "Memory created successfully" << std::endl;
     return dummy_ptr;
+    */
 }
 
 void memcpy(void*& dest, void*& src, size_t numBytes){
+    // src = host memory
+    // dest = device mem (iris mem)
+    auto init_iris = IRIS::init();
+    auto* task = new IRIS::task_t;
 
+    auto mem_task = IRIS::iris_task_create(task);
+
+    auto h2d = IRIS::iris_task_h2d(*task, *(static_cast<IRIS::mem_t*>(dest)), 0, numBytes, src);
+
+    auto submit = IRIS::iris_task_submit(*task, IRIS::gpu, nullptr, 0);
+}
+
+/*
+void memcpy(void*& dest, void*& src, size_t numBytes){
+ 
     // burada bir if check olmasi lazim, h2d copy mi
     // d2h copy mi oldugunun anlasilmasi icin, cunku d2h
     // copy islemi aslinda h2d de yapiliyor olacak iriste
@@ -68,11 +86,13 @@ void memcpy(void*& dest, void*& src, size_t numBytes){
         // shared_ptr vs kullanmak pek makul gibi durmuyor memory
         
         auto mem_task = IRIS::iris_task_create(task);
-        IRIS::mem_t* h2d_mem = it->second;
-        h2d_ptr_map.erase(it);
+        //IRIS::mem_t* h2d_mem = it->second;
+        IRIS::mem_t* h2d_mem = new IRIS::mem_t;
+        //h2d_ptr_map.erase(it);
         delete dest; // it->first == dest
-        dest = src; // make dest to look same memory location as src.
-        auto h2d = IRIS::iris_task_h2d(*task, *h2d_mem, 0, numBytes, src);
+        dest = std::malloc(numBytes);
+        std::memcpy(dest, src, numBytes);
+        auto h2d = IRIS::iris_task_h2d(*task, *h2d_mem, 0, numBytes, dest);
         // src data structure a eklenecek?
         
         void* d2h_ptr = std::malloc(numBytes);
@@ -96,13 +116,14 @@ void memcpy(void*& dest, void*& src, size_t numBytes){
         auto iter = d2h_ptr_map.find(src);
         if( iter != d2h_ptr_map.end()){
             std::cout << "inside" << std::endl;
-            dest = iter->second;
+            dest = src;
         }
         else {
             std::runtime_error("Neither src nor dest exists in the pointer map.");
         }
     }
 }
+*/
 
 }
 CHARM_SYCL_END_NAMESPACE

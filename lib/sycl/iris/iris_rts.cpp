@@ -586,7 +586,7 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
     }
 
     /* ----------- */
-
+    // bymk: mem objelerini verirken arg sirasini nasil halledicez??
     void set_param(void const* ptr, size_t size) override {
         if (kernel_) {
             if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, size, const_cast<void*>(ptr)) !=

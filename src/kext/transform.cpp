@@ -264,10 +264,12 @@ private:
         auto const l = layout(ctx, fn_record, true);
 
         for (auto it = l.begin(); it != l.end(); ++it) {
+            std::cout << "it: " << it << std::endl; 
             auto const type = it->decl()->getType();
 
             if (accessor_type acc_type;
                 is_accessor(type, acc_type) && acc_type == accessor_type::DEVICE) {
+                std::cout << "transform.cpp type device accessor" << std::endl;
                 xcml::expr_ptr acc_ptr = arg_ptr;
                 for (auto const* f : it->path()) {
                     acc_ptr = make_member_ref(acc_ptr, l.get_field_name(f));
@@ -313,10 +315,13 @@ private:
 
                 if (acc_type == accessor_type::DEVICE) {
                     auto const mode = cts->getTemplateArgs()[2].getAsIntegral().getExtValue();
+
+                    std::cout << "transform.cpp type device accessor dummy" << std::endl;
                     name = fmt::format(
                         "sycl::detail::device_accessor<dummy, {}, (sycl::access_mode){}>", dim,
                         mode);
                 } else if (acc_type == accessor_type::LOCAL) {
+                    std::cout << "transform.cpp type local accessor dummy" << std::endl;
                     name = fmt::format("sycl::local_accessor<dummy, {}>", dim);
                 }
 

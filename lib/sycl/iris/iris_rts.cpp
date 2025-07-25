@@ -586,14 +586,34 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
     }
 
     /* ----------- */
-    // bymk: mem objelerini verirken arg sirasini nasil halledicez??
+    // bymk TODO: we will check from a global data structure,
+    // if given pointer exists in the data structure then we
+    // will call iris_kernel_setmem function instead of setarg.
+    // read write information must be also stored in the data
+    // structure. We should also cast ptr to iris_mem. 
     void set_param(void const* ptr, size_t size) override {
+
+        auto* ptrs = reinterpret_cast<const void* const*>(ptr);
+        std::cout << "First capture: " << ptrs[0] << std::endl;
+        std::cout << "Second capture: " << ptrs[1] << std::endl;
         if (kernel_) {
-            if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, size, const_cast<void*>(ptr)) !=
-                IRIS::SUCCESS) {
-                throw std::runtime_error("iris_kernel_setarg() failed");
+            std::cout << "pointer inside set param: " << ptr << std::endl;
+            if(auto it = IRIS::usm_iris_mem_map.find(const_cast<void*>(ptr)); it != IRIS::usm_iris_mem_map.end()){
+                    std::cout << "Inside mem_set" << std::endl;
+                if (IRIS::iris_kernel_setmem_off(*kernel_, arg_idx_, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptr))), 0, IRIS::rw) !=
+                    IRIS::SUCCESS) {
+                    throw std::runtime_error("iris_kernel_setarg() failed");
+                    }
             }
-        }
+            else {
+                    std::cout << "Inside kernel_setarg" << std::endl;
+                if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, size, const_cast<void*>(ptr)) !=
+                    IRIS::SUCCESS) {
+                    throw std::runtime_error("iris_kernel_setarg() failed");
+                    }
+            }
+            
+      }
 
         arg_idx_++;
     }
@@ -760,11 +780,13 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
     /* ----------- */
 
     std::unique_ptr<rts::event> submit() override {
+        std::cout << "iris_rts.cpp:779 submit() called" << std::endl;
         DEBUG_FMT("submit(): this={}", format::ptr(this));
 
         if (kernel_) {
             DEBUG_FMT("iris_task_kernel_object: this={}", format::ptr(this));
 
+            std::cout << "iris_rts.cpp:786 iris_task_kernel_object called" << std::endl;
             if (IRIS::iris_task_kernel_object(*task_, *kernel_, 3, nullptr, par_.gws.data(),
                                               par_.lws.data()) != IRIS::SUCCESS) {
                 throw std::runtime_error("iris_task_kernel_object() failed");
@@ -778,6 +800,7 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
         if (!empty_) {
             DEBUG_FMT("iris_task_submit: this={}", format::ptr(this));
 
+            std::cout << "iris_rts.cpp:800 submit() called" << std::endl;
             if (IRIS::iris_task_submit(*task_, policy_, nullptr, 0) != IRIS::SUCCESS) {
                 throw std::runtime_error("iris_task_submit");
             }

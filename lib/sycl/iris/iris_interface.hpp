@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <charm/sycl/config.hpp>
 #include "../error.hpp"
 #include "../interfaces.hpp"
@@ -41,6 +42,10 @@ struct iris_interface_20000 {
     static constexpr auto vendor = int(4098);
     static constexpr auto w = int(-2);
 
+    // IRIS::r, IRIS::w, IRIS::rw -> memory access options type is size_t.
+    // We initialize mem access to read and write for now. 
+    static std::unordered_map<void*, size_t> usm_iris_mem_map;
+ 
 private:
     static int32_t (*iris_device_count_ptr)(void*);
 

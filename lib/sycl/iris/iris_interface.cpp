@@ -26,6 +26,8 @@ CHARM_SYCL_BEGIN_NAMESPACE
 
 namespace runtime {
 
+
+std::unordered_map<void*, size_t> iris_interface_20000::usm_iris_mem_map;
 int32_t (*iris_interface_20000::iris_device_count_ptr)(void*);
 int32_t (*iris_interface_20000::iris_device_info_ptr)(int32_t, int32_t, void*, void*);
 int32_t (*iris_interface_20000::iris_env_set_ptr)(void const*, void const*);
@@ -72,7 +74,7 @@ result<void> iris_interface_20000::init() {
     if (handle_) {
         return {};
     }
-
+    
     std::string errmsg;
 
     handle_ = dlopen("libiris.so", RTLD_NOW);

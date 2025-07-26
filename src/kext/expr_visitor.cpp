@@ -371,7 +371,6 @@ public:                                                                         
     xcml::expr_ptr VisitCXXTemporaryObjectExpr(clang::CXXTemporaryObjectExpr const* expr,
                                                EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
-
         auto const& type = info_.define_type(expr->getType());
         auto var = u::add_local_var(scope_, type, info_.nm().gen_var("temp"));
 

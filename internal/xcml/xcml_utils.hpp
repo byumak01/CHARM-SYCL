@@ -445,10 +445,12 @@ inline xcml::expr_ptr as_expr(xcml::node_ptr node) {
 inline xcml::var_ref_ptr add_local_var(xcml::compound_stmt_ptr const& scope,
                                        std::string const& type, std::string const& name,
                                        xcml::expr_ptr init = nullptr, bool push_front = false) {
+
     auto sym = new_symbol_id();
     sym->type = type;
     sym->name = name;
-
+    std::cout << "sym->type: " << sym->type << " add_local_var start"<< std::endl;
+    std::cout << "sym->name: " << sym->name << " add_local_var end" << std::endl;
     auto decl = new_var_decl();
     decl->name = name;
 

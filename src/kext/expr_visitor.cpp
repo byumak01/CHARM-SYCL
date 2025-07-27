@@ -155,7 +155,6 @@ public:                                                                         
     xcml::expr_ptr VisitCallExpr(clang::CallExpr const* expr, bool direct = false,
                                  context const& = context()) {
         PUSH_CONTEXT(expr);
-
         return direct ? make_call_expr(expr) : add(expr, make_call_expr(expr));
     }
 
@@ -372,6 +371,7 @@ public:                                                                         
                                                EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
         auto const& type = info_.define_type(expr->getType());
+        std::cout << "\033[31mVISITTEMPPOBJEXPR\033[0m" << std::endl;
         auto var = u::add_local_var(scope_, type, info_.nm().gen_var("temp"));
 
         construct(scope_, var, false, expr, var);
@@ -658,6 +658,7 @@ private:
             *type_out = type_name;
         }
 
+        std::cout << "\033[31mADD\033[0m" << std::endl;
         return u::add_local_var(scope_, type_name, info_.nm().gen_var("temp"), node);
     }
 

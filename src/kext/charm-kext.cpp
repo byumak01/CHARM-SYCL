@@ -69,6 +69,7 @@ int kext_main(int argc, char** argv)
     });
 
     auto status = run_action(op.get(), std::move(action));
+    std::cout << "charm-kext.cpp:71" << std::endl;
 
     if (status == 0) {
         TransformSave(os ? *os : llvm::outs());

@@ -229,6 +229,44 @@ struct transformer final {
     }
 
 private:
+
+    bool is_primitive_pointer_type(clang::QualType type) {
+    if (type->isPointerType()) {
+        // Get the pointed-to type
+        clang::QualType pointee = type->getPointeeType();
+        // Check if what it points to is a primitive
+        return pointee->isBuiltinType() && pointee->isArithmeticType();
+    }
+    return false;
+}
+
+    bool is_primitive_type(clang::QualType type) {
+    if (type->isBuiltinType()) {
+        const auto* builtin = type->getAs<clang::BuiltinType>();
+        if (builtin) {
+            switch (builtin->getKind()) {
+                // Integer types commonly used in device kernels
+                case clang::BuiltinType::Int:
+                case clang::BuiltinType::UInt:
+                case clang::BuiltinType::Long:
+                case clang::BuiltinType::ULong:
+                case clang::BuiltinType::Short:
+                case clang::BuiltinType::UShort:
+                case clang::BuiltinType::Char_S:
+                case clang::BuiltinType::Char_U:
+                case clang::BuiltinType::Float:
+                case clang::BuiltinType::Double:
+                case clang::BuiltinType::Bool:
+                    return true;
+                    
+                default:
+                    return false;
+            }
+        }
+    }
+    return false;
+    }
+
     std::string const& define_kernel_wrapper(clang::Expr const* range,
                                              clang::Expr const* /*offset*/,
                                              clang::Expr const* fn, llvm::StringRef cxx_name) {
@@ -267,15 +305,33 @@ private:
         for (auto it = l.begin(); it != l.end(); ++it) {
             auto const type = it->decl()->getType();
 
-            std::cout << "it type: " << type.getAsString() << std::endl;
+            std::cout << "\033[32mit type:\033[0m " << type.getAsString() << std::endl;
 
-            /*
-            if(primitive_type){
+            
+            if(is_primitive_pointer_type(type) ){
+                std::cout << "Original type: " << type.getAsString() << std::endl;
+                std::cout << "Canonical type: " << type.getCanonicalType().getAsString() << std::endl;
+                std::cout << "\033[32mprimitive type\033[0m" << std::endl;
+                xcml::expr_ptr primitive_ptr = arg_ptr;
+                for (auto const* f : it->path()) {
+                    primitive_ptr = make_member_ref(primitive_ptr, l.get_field_name(f));
+                    
+                    if (!f->getType()->isPointerType()) {
+                        primitive_ptr = make_addr_of(primitive_ptr);
+                    }
+                    
+                    
+                }
+
+                auto const& ptr_param = info_.nm().gen_var("ptr");
+                std::cout << "ptr_param: " << ptr_param << std::endl;
+                add_param(wrapper, info_.define_type(type), ptr_param);
+
+                auto ptr_ref = primitive_ptr;
+                push_expr(wrapper->body, assign_expr(ptr_ref, make_var_ref(ptr_param)));
+            }
                 
-            } 
-             
-             
-            */
+            
             for (auto const* x : it->path()) {
             std::cout << "x: " << l.get_field_name(x) << std::endl;
             }
@@ -345,22 +401,30 @@ private:
         desc_buffer_ += fmt::format("}}\n");
         desc_buffer_ += fmt::format("}};\n");
         descmap_.emplace_back(desc_name, kernel_name);
+        std::cout << "desc buffer: " << desc_buffer_ << std::endl;
 
         if (op->getBody()) {
+            std::cout << "scoped set captures before" << std::endl;
             auto _save = info_.scoped_set_captures(record);
+            std::cout << "scoped set captures after" << std::endl;
 
             auto body = visit_compound_stmt(info_, op->getBody(), fn, op, true);
+            std::cout << "visit compound stmt after " << std::endl;
 
             push_stmt(wrapper->body, body);
+            std::cout << "push stmt after " << std::endl;
         }
 
+        std::cout << "before global declarations push " << std::endl;
         info_.prg()->global_declarations.push_back(wrapper);
 
+        std::cout << "end of the define kernel wrapper function" << std::endl;
         return wrapper->name;
     }
 
     xcml::var_ref_ptr add_local_var(xcml::compound_stmt_ptr scope, clang::QualType type,
                                     std::string const& name, xcml::expr_ptr init = nullptr) {
+        std::cout << "add local var called in transform.cpp" << std::endl;
         if (!type->isPointerType() && !type->isReferenceType()) {
             type.removeLocalConst();
         }

@@ -48,10 +48,13 @@ void memcpy(void*& dest, void*& src, size_t numBytes){
     if(is_d2h){
         std::cout << "device to host" << std::endl;
         auto d2h = IRIS::iris_task_d2h(*task, *(static_cast<IRIS::mem_t*>(src)), 0, numBytes, dest);
+        std::cout << "d2h: " << d2h << std::endl;
     }
     else {
+        std::cout << "iris success: " << IRIS::SUCCESS << std::endl;
         std::cout << "host to device" << std::endl;
         auto h2d = IRIS::iris_task_h2d(*task, *(static_cast<IRIS::mem_t*>(dest)), 0, numBytes, src);
+        std::cout << "h2d: " << h2d << std::endl;
     }
 
     auto submit = IRIS::iris_task_submit(*task, IRIS::gpu, nullptr, 0);

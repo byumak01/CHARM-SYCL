@@ -596,6 +596,8 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
         auto* ptrs = reinterpret_cast<const void* const*>(ptr);
         std::cout << "First capture: " << ptrs[0] << std::endl;
         std::cout << "Second capture: " << ptrs[1] << std::endl;
+        IRIS::iris_kernel_setmem_off(*kernel_, 1, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[1]))), 0, IRIS::rw);
+        IRIS::iris_kernel_setmem_off(*kernel_, 2, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[0]))), 0, IRIS::rw);
         std::cout << "ptrs full: " << ptrs << std::endl;
         if (kernel_) {
             std::cout << "pointer inside set param: " << ptr << std::endl;

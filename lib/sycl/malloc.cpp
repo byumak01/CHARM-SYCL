@@ -8,6 +8,7 @@ namespace runtime {
 using IRIS = iris_interface_20000;
 
 void *new_malloc(size_t numBytes){
+    std::cout << "new malloc numBytes: " << numBytes << std::endl;
 
     auto result = IRIS::init();
     std::cout << "After init" << std::endl;
@@ -30,6 +31,8 @@ void *new_malloc(size_t numBytes){
 void memcpy(void*& dest, void*& src, size_t numBytes){
     auto init_iris = IRIS::init();
     auto* task = new IRIS::task_t;
+
+    std::cout << "num of bytes: " << numBytes << std::endl;
     
     bool is_d2h = true;
     
@@ -44,6 +47,7 @@ void memcpy(void*& dest, void*& src, size_t numBytes){
     }
 
     auto mem_task = IRIS::iris_task_create(task);
+    std::cout << "mem_task: " << mem_task << std::endl;
 
     if(is_d2h){
         std::cout << "device to host" << std::endl;
@@ -51,13 +55,14 @@ void memcpy(void*& dest, void*& src, size_t numBytes){
         std::cout << "d2h: " << d2h << std::endl;
     }
     else {
-        std::cout << "iris success: " << IRIS::SUCCESS << std::endl;
         std::cout << "host to device" << std::endl;
         auto h2d = IRIS::iris_task_h2d(*task, *(static_cast<IRIS::mem_t*>(dest)), 0, numBytes, src);
         std::cout << "h2d: " << h2d << std::endl;
     }
 
     auto submit = IRIS::iris_task_submit(*task, IRIS::gpu, nullptr, 0);
+    IRIS::iris_synchronize();
+    std::cout << "submission: " << submit << std::endl;
 }
 }
 CHARM_SYCL_END_NAMESPACE

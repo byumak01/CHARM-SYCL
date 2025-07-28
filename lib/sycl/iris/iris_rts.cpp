@@ -596,8 +596,10 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
         auto* ptrs = reinterpret_cast<const void* const*>(ptr);
         std::cout << "First capture: " << ptrs[0] << std::endl;
         std::cout << "Second capture: " << ptrs[1] << std::endl;
-        IRIS::iris_kernel_setmem_off(*kernel_, 1, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[1]))), 0, IRIS::rw);
-        IRIS::iris_kernel_setmem_off(*kernel_, 2, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[0]))), 0, IRIS::rw);
+        auto x = IRIS::iris_kernel_setmem_off(*kernel_, 1, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[0]))), 0, IRIS::rw);
+        // std::cout << "setmem success: " << x << std::endl;
+        auto y = IRIS::iris_kernel_setmem_off(*kernel_, 2, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[1]))), 0, IRIS::rw);
+        // std::cout << "setmem success: " << y << std::endl;
         std::cout << "ptrs full: " << ptrs << std::endl;
         if (kernel_) {
             std::cout << "pointer inside set param: " << ptr << std::endl;
@@ -609,7 +611,7 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
                     }
             }
             else {
-                    std::cout << "Inside kernel_setarg" << std::endl;
+                    std::cout << "Inside kernel_setarg arg_idx: " << arg_idx_ << std::endl;
                 if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, size, const_cast<void*>(ptr)) !=
                     IRIS::SUCCESS) {
                     throw std::runtime_error("iris_kernel_setarg() failed");
@@ -686,6 +688,7 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
             empty_ = false;
         }
 
+        std::cout << "set buffer param arg_idx_: " << arg_idx_ << std::endl;
         arg_idx_ += 1;
     }
 

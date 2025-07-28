@@ -116,7 +116,6 @@ struct stmt_visitor final : stmt_visitor_base<stmt_visitor, void, xcml::expr_ptr
     void VisitForStmt_2(clang::ForStmt const* stmt, llvm::StringRef anno, EXTRA_ARGS) {
         PUSH_CONTEXT(stmt);
 
-        std::cout << "visit for stmt2 called" << std::endl;
         auto node = xcml::new_for_stmt();
 
         /*
@@ -391,11 +390,8 @@ xcml::compound_stmt_ptr visit_compound_stmt(transform_info& info,
                                             clang::Expr const* kernel,
                                             clang::FunctionDecl const* function,
                                             bool function_is_kernel, context const&) {
-    std::cout << "visit_compound_stmt start" << std::endl;
     stmt_visitor vis(info, nullptr, kernel, function, function_is_kernel);
-    std::cout << "visit_compound_stmt before visit" << std::endl;
     vis.Visit(stmt);
-    std::cout << "visit_compound_stmt end" << std::endl;
     return vis.get_scope();
 }
 

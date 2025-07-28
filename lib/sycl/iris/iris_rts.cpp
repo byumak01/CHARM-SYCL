@@ -593,32 +593,24 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
     // structure. We should also cast ptr to iris_mem. 
     void set_param(void const* ptr, size_t size) override {
 
+        /* Set malloc device pointers */
         auto* ptrs = reinterpret_cast<const void* const*>(ptr);
-        std::cout << "First capture: " << ptrs[0] << std::endl;
-        std::cout << "Second capture: " << ptrs[1] << std::endl;
-        auto x = IRIS::iris_kernel_setmem_off(*kernel_, 1, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[0]))), 0, IRIS::rw);
-        // std::cout << "setmem success: " << x << std::endl;
-        auto y = IRIS::iris_kernel_setmem_off(*kernel_, 2, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[1]))), 0, IRIS::rw);
-        // std::cout << "setmem success: " << y << std::endl;
-        std::cout << "ptrs full: " << ptrs << std::endl;
+
+        size_t sz = IRIS::usm_iris_mem_map.size();
+        for(size_t i = 0; i < sz ; i++){
+            if (IRIS::iris_kernel_setmem_off(*kernel_, i + 1, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[i]))), 0, IRIS::rw)
+                != IRIS::SUCCESS){
+                throw std::runtime_error("iris_kernel_setmem_off() inside set_param failed");
+            }
+            std::cout << i << ". capture: " << ptrs[i] << std::endl;
+        }
+
         if (kernel_) {
-            std::cout << "pointer inside set param: " << ptr << std::endl;
-            if(auto it = IRIS::usm_iris_mem_map.find(const_cast<void*>(ptr)); it != IRIS::usm_iris_mem_map.end()){
-                    std::cout << "Inside mem_set" << std::endl;
-                if (IRIS::iris_kernel_setmem_off(*kernel_, arg_idx_, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptr))), 0, IRIS::rw) !=
-                    IRIS::SUCCESS) {
+             if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, size, const_cast<void*>(ptr)) !=
+                IRIS::SUCCESS) {
                     throw std::runtime_error("iris_kernel_setarg() failed");
-                    }
-            }
-            else {
-                    std::cout << "Inside kernel_setarg arg_idx: " << arg_idx_ << std::endl;
-                if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, size, const_cast<void*>(ptr)) !=
-                    IRIS::SUCCESS) {
-                    throw std::runtime_error("iris_kernel_setarg() failed");
-                    }
-            }
-            
-      }
+                }
+        }
 
         arg_idx_++;
     }

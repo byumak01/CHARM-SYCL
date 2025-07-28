@@ -109,7 +109,6 @@ void handler_impl::single_task(char const* name, uint32_t hash) {
 }
 
 void handler_impl::parallel_for(sycl::range<3> const& range, char const* name, uint32_t hash) {
-    std::cout << "handler.cpp parallel_for 1 called" << std::endl;
     auto d = static_pointer_cast<impl::device_impl>(q_.get_device())->to_lower();
 
     if (d->is_host()) {
@@ -124,7 +123,6 @@ void handler_impl::parallel_for(sycl::range<3> const& range, char const* name, u
 
 void handler_impl::parallel_for(sycl::nd_range<3> const& range, char const* name,
                                 uint32_t hash) {
-    std::cout << "handler.cpp parallel_for 2 called" << std::endl;
     auto d = static_pointer_cast<impl::device_impl>(q_.get_device())->to_lower();
 
     if (d->is_host()) {

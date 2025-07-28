@@ -282,7 +282,6 @@ private:
                 /*
                  * __shared__ ${value_type} red;
                  */
-                std::cout << "add_local_var at nvidia-cuda.cpp" << std::endl;
                 auto red = u::add_local_var(fd->body, value_type, "_s__red");
                 auto red_ptr = u::make_addr_of(red);
                 fd->body->symbols.back()->cudaAttributes.push_back(cuda_shared());

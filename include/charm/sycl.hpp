@@ -103,7 +103,7 @@
 #include <charm/sycl/selector.ipp>
 #include <charm/sycl/utils.ipp>
 #include <charm/sycl/vec.ipp>
-#include <charm/sycl/malloc_device.ipp>
+#include <charm/sycl/usm.ipp>
 //
 #include <charm/sycl/runtime/blas.hpp>
 //

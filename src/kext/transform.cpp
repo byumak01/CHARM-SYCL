@@ -294,7 +294,6 @@ private:
         auto const* record = op->getParent();
         auto const fn_record = ctx.getRecordType(record);
         auto const args = info_.nm().gen_var("args");
-        std::cout << "transform.cpp before add_local_var call" << std::endl; 
         auto const arg_ptr =
             add_local_var(wrapper->body, ctx.getPointerType(fn_record), info_.nm().this_name(),
                           make_addr_of(make_var_ref(args)));
@@ -306,7 +305,6 @@ private:
             auto const type = it->decl()->getType();
 
             std::cout << "\033[32mit type:\033[0m " << type.getAsString() << std::endl;
-
                     
         if(is_primitive_pointer_type(type) ){
             std::cout << "Original type: " << type.getAsString() << std::endl;
@@ -333,10 +331,6 @@ private:
             push_expr(wrapper->body, assign_expr(ptr_ref, make_var_ref(ptr_param)));
         }               
                     
-            for (auto const* x : it->path()) {
-            std::cout << "x: " << l.get_field_name(x) << std::endl;
-            }
-
             if (accessor_type acc_type;
                 is_accessor(type, acc_type) && acc_type == accessor_type::DEVICE) {
                 xcml::expr_ptr acc_ptr = arg_ptr;
@@ -402,30 +396,22 @@ private:
         desc_buffer_ += fmt::format("}}\n");
         desc_buffer_ += fmt::format("}};\n");
         descmap_.emplace_back(desc_name, kernel_name);
-        std::cout << "desc buffer: " << desc_buffer_ << std::endl;
 
         if (op->getBody()) {
-            std::cout << "scoped set captures before" << std::endl;
             auto _save = info_.scoped_set_captures(record);
-            std::cout << "scoped set captures after" << std::endl;
 
             auto body = visit_compound_stmt(info_, op->getBody(), fn, op, true);
-            std::cout << "visit compound stmt after " << std::endl;
 
             push_stmt(wrapper->body, body);
-            std::cout << "push stmt after " << std::endl;
         }
 
-        std::cout << "before global declarations push " << std::endl;
         info_.prg()->global_declarations.push_back(wrapper);
 
-        std::cout << "end of the define kernel wrapper function" << std::endl;
         return wrapper->name;
     }
 
     xcml::var_ref_ptr add_local_var(xcml::compound_stmt_ptr scope, clang::QualType type,
                                     std::string const& name, xcml::expr_ptr init = nullptr) {
-        std::cout << "add local var called in transform.cpp" << std::endl;
         if (!type->isPointerType() && !type->isReferenceType()) {
             type.removeLocalConst();
         }

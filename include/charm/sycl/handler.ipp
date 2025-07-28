@@ -31,7 +31,6 @@ inline void handler::parallel_for_(range<Dimensions> const& range, KernelType co
                   "The kernel function must be a trivially copyable.");
 #endif
 
-    std::cout << "handler.ipp parallel_for_ called" << std::endl;
     using Name = std::remove_cvref_t<KernelName>;
     size_t name_len;
     auto const* name = runtime::__charm_sycl_kernel_name<Name>(name_len);
@@ -39,7 +38,6 @@ inline void handler::parallel_for_(range<Dimensions> const& range, KernelType co
     auto const h = detail::fnv1a(name, name_len + 3);
     impl_->parallel_for(detail::extend(range), name, h);
 
-    std::cout << "handler.ipp parallel_for_ before do_bind" << std::endl;
     do_bind<Name>(kernel);
 }
 
@@ -96,7 +94,6 @@ void reverse(F f, Head&& head, Tail&&... tail) {
 
 template <class KernelName, int Dimensions, class... Rest>
 void handler::parallel_for(range<Dimensions> const& range, Rest&&... rest) {
-    std::cout << "handler.ipp:98 parallel_for" << std::endl;
     using Args = std::tuple<std::remove_reference_t<std::remove_cv_t<Rest>>...>;
 
     if constexpr (std::tuple_size_v<Args> == 1) {
@@ -127,7 +124,6 @@ void handler::parallel_for(range<Dimensions> const& range, Rest&&... rest) {
 
 template <class KernelName, int Dimensions, class KernelType>
 void handler::parallel_for_1(range<Dimensions> const& range, KernelType& fn) {
-    std::cout << "handler_ipp:129 parallel_for_1 called" << std::endl;
 #ifdef __SYCL_DEVICE_ONLY__
     static_assert(std::is_trivially_copyable_v<KernelType>,
                   "The kernel function must be a trivially copyable.");

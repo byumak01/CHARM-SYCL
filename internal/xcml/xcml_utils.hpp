@@ -449,8 +449,6 @@ inline xcml::var_ref_ptr add_local_var(xcml::compound_stmt_ptr const& scope,
     auto sym = new_symbol_id();
     sym->type = type;
     sym->name = name;
-    std::cout << "sym->type: " << sym->type << " add_local_var start"<< std::endl;
-    std::cout << "sym->name: " << sym->name << " add_local_var end" << std::endl;
     auto decl = new_var_decl();
     decl->name = name;
 

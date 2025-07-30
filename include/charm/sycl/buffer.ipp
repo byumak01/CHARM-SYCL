@@ -135,7 +135,6 @@ template <access_mode AccessMode, target Target>
 inline accessor<T, Dimensions, AccessMode, Target>
 buffer<T, Dimensions, AllocatorT>::get_access(handler& commandGroupHandler) {
     static_assert(Target == target::device);
-    std::cout << "get_access called buffer.ipp:138" << std::endl;
     return accessor<T, Dimensions, AccessMode, Target>(*this, commandGroupHandler);
 }
 

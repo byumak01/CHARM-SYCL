@@ -64,7 +64,6 @@ void buffer_impl::do_writeback(dep::memory_access acc) {
 }
 
 void* buffer_impl::get_pointer() {
-    std::cout << "buffer.cpp:67" << std::endl;
     return dep_->get_pointer();
 }
 

@@ -58,6 +58,7 @@ void memcpy(void*& dest, void*& src, size_t numBytes){
     if (IRIS::iris_synchronize() != IRIS::SUCCESS) {
         throw std::runtime_error("iris_synchronize inside usm.cpp failed");
     }
+
 }
 }
 CHARM_SYCL_END_NAMESPACE

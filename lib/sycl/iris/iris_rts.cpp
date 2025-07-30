@@ -335,7 +335,6 @@ struct buffer_impl final : rts::buffer {
     }
 
     void* get_pointer() override {
-        std::cout << "iris_rts.cpp:338" << std::endl;
         return &mem_;
     }
 
@@ -595,14 +594,15 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
 
         /* Set malloc device pointers */
         auto* ptrs = reinterpret_cast<const void* const*>(ptr);
-
+    
+        // TODO: this assumes only malloc pointers are captured, since it only captures ?
+        // variables used inside the kernel it should not be a problem but need to double check.
         size_t sz = IRIS::usm_iris_mem_map.size();
         for(size_t i = 0; i < sz ; i++){
             if (IRIS::iris_kernel_setmem_off(*kernel_, i + 1, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[i]))), 0, IRIS::rw)
                 != IRIS::SUCCESS){
                 throw std::runtime_error("iris_kernel_setmem_off() inside set_param failed");
             }
-            std::cout << i << ". capture: " << ptrs[i] << std::endl;
         }
 
         if (kernel_) {
@@ -680,7 +680,6 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
             empty_ = false;
         }
 
-        std::cout << "set buffer param arg_idx_: " << arg_idx_ << std::endl;
         arg_idx_ += 1;
     }
 
@@ -778,13 +777,11 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
     /* ----------- */
 
     std::unique_ptr<rts::event> submit() override {
-        std::cout << "iris_rts.cpp:779 submit() called" << std::endl;
         DEBUG_FMT("submit(): this={}", format::ptr(this));
 
         if (kernel_) {
             DEBUG_FMT("iris_task_kernel_object: this={}", format::ptr(this));
 
-            std::cout << "iris_rts.cpp:786 iris_task_kernel_object called" << std::endl;
             if (IRIS::iris_task_kernel_object(*task_, *kernel_, 3, nullptr, par_.gws.data(),
                                               par_.lws.data()) != IRIS::SUCCESS) {
                 throw std::runtime_error("iris_task_kernel_object() failed");
@@ -798,7 +795,6 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
         if (!empty_) {
             DEBUG_FMT("iris_task_submit: this={}", format::ptr(this));
 
-            std::cout << "iris_rts.cpp:800 submit() called" << std::endl;
             if (IRIS::iris_task_submit(*task_, policy_, nullptr, 0) != IRIS::SUCCESS) {
                 throw std::runtime_error("iris_task_submit");
             }

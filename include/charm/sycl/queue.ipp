@@ -70,9 +70,7 @@ inline void queue::memcpy(T*& dest, U*& src, size_t numBytes){
 template <typename T>
 inline event queue::submit(T cgf) {
     handler cgh(*this);
-    std::cout << "queue submit before cgf" << std::endl;
     cgf(cgh);
-    std::cout << "queue submit after cgf" << std::endl;
 
     auto const ev = cgh.finalize();
     impl_->add(runtime::impl_access::get_impl(ev));

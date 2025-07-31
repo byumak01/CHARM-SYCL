@@ -162,6 +162,9 @@ struct task {
     virtual void set_local_mem_size(size_t byte) = 0;
 
     // Memory operations
+    
+    virtual void usm_memcpy(void*& dest, void*& src, size_t numBytes) = 0;
+
     virtual void copy_1d(buffer& src, memory_access src_acc, size_t src_off_byte, buffer& dst,
                          memory_access dst_acc, size_t dst_off_byte, size_t len_byte) = 0;
 

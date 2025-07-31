@@ -437,6 +437,10 @@ struct task_impl final : dep::task {
         rts_->set_buffer_param(buf_.to_rts(), buf_.h_ptr(), dom, acc, offset, offset_byte);
     }
 
+    void usm_memcpy(void*& dest, void*& src, size_t numBytes) override {
+        rts_->usm_memcpy(dest, src, numBytes);
+    } 
+
     void copy_1d(dep::buffer& src, dep::memory_access src_acc, size_t src_off_byte,
                  dep::buffer& dst, dep::memory_access dst_acc, size_t dst_off_byte,
                  size_t len_byte) override {

@@ -135,6 +135,10 @@ struct task {
     virtual void set_host(std::function<void()> const& f) = 0;
 
     // 2.c Memory Operations
+    virtual void usm_memcpy(void*& dest, void*& src, size_t numBytes){
+        throw std::runtime_error("usm_memcpy not implemented for this backend");
+    } 
+
     virtual void copy_1d(buffer& src, size_t src_off_byte, buffer& dst, size_t dst_off_byte,
                          size_t len_byte) = 0;
 

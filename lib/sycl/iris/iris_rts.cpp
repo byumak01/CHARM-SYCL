@@ -685,6 +685,32 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
 
     /* ----------- */
 
+    void usm_memcpy(void*& dest, void*& src, size_t numBytes) override {
+        bool is_d2h = true;
+        
+        if(auto it = IRIS::usm_iris_mem_map.find(src); it != IRIS::usm_iris_mem_map.end()){
+            is_d2h = true;       
+        } else if (auto it = IRIS::usm_iris_mem_map.find(dest); it != IRIS::usm_iris_mem_map.end()){
+            is_d2h = false;
+        } else {
+            throw std::runtime_error("Neither src nor dest is a device target.");
+        }
+     
+        if(is_d2h){
+            if (IRIS::iris_task_d2h(*task_, *(static_cast<IRIS::mem_t*>(src)), 0, numBytes, dest) != IRIS::SUCCESS){
+                throw std::runtime_error("iris_task_d2h inside usm_memcpy failed");
+            }
+        }
+        else {
+            if (IRIS::iris_task_h2d(*task_, *(static_cast<IRIS::mem_t*>(dest)), 0, numBytes, src) != IRIS::SUCCESS){
+                throw std::runtime_error("iris_task_h2d inside usm_memcpy failed");
+            }
+        }
+
+        empty_ = false;
+   
+    }
+
     void copy_1d(rts::buffer&, size_t, rts::buffer&, size_t, size_t) override {
         format::print(std::cerr, "Error: IRIS RTS does not support D2D copy");
         std::abort();

@@ -7,3 +7,4 @@ generated/.clang-format
 generated/Cargo.lock
 generated/target
 gitmodules
+.cache

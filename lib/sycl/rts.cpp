@@ -15,7 +15,7 @@ static std::unique_ptr<subsystem> make_subsystem_impl() {
     auto env = getenv("CHARM_SYCL_RTS");
     
     // bymk: closed all subsystems except IRIS.
-    /*
+    
     if (env) {
         if (strcasecmp(env, "dev") == 0 || strcasecmp(env, "CPU") == 0) {
             INFO("CPU RTS is loaded.");
@@ -58,7 +58,7 @@ static std::unique_ptr<subsystem> make_subsystem_impl() {
         format::print(std::cerr, "Unknown RTS Name: {} (from CHARM_SYCL_RTS)\n", env);
         std::exit(1);
     }
-    */
+    
     /* If no RTS is given */
 
     if (auto iris = runtime::impl::make_iris_rts()) {
@@ -71,7 +71,7 @@ static std::unique_ptr<subsystem> make_subsystem_impl() {
         throw std::runtime_error("IRIS subsystem creation failed.");
     }
 
-    /*
+    
     if (auto cuda = runtime::impl::make_dev_rts_cuda()) {
         INFO("CUDA RTS is loaded.");
         blas::init_blas_cuda();
@@ -89,7 +89,7 @@ static std::unique_ptr<subsystem> make_subsystem_impl() {
         blas::init_blas_cpu();
     }
     return p;
-    */
+    
 }
 
 std::unique_ptr<subsystem> make_subsystem() {

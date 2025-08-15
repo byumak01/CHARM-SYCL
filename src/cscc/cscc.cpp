@@ -6,6 +6,7 @@
 #include <fmt/format.h>
 #include <utils/errors.hpp>
 #include <utils/io.hpp>
+#include <iostream>
 
 namespace {
 
@@ -34,7 +35,8 @@ void assertion_failed(char const* expr, char const* function, char const* file, 
 
 int main(int argc, char** argv) {
     auto argv0 = std::string_view(argv[0]);
-
+    std::cout << "pid from cscc.cpp: " << getpid() << std::endl;
+    //sleep(15);
     if (argv0 == "__chsy_lower__") {
         return try_handle_all(argv[0], [&]() -> boost::leaf::result<int> {
             return lower_main(argc, argv);

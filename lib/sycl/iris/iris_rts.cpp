@@ -585,25 +585,8 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
     }
 
     /* ----------- */
-    // bymk TODO: we will check from a global data structure,
-    // if given pointer exists in the data structure then we
-    // will call iris_kernel_setmem function instead of setarg.
-    // read write information must be also stored in the data
-    // structure. We should also cast ptr to iris_mem. 
-    void set_param(void const* ptr, size_t size) override {
 
-        /* Set malloc device pointers */
-        auto* ptrs = reinterpret_cast<const void* const*>(ptr);
-    
-        // TODO: this assumes only malloc pointers are captured, since it only captures ?
-        // variables used inside the kernel it should not be a problem but need to double check.
-        size_t sz = IRIS::usm_iris_mem_map.size();
-        for(size_t i = 0; i < sz ; i++){
-            if (IRIS::iris_kernel_setmem_off(*kernel_, i + 1, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[i]))), 0, IRIS::rw)
-                != IRIS::SUCCESS){
-                throw std::runtime_error("iris_kernel_setmem_off() inside set_param failed");
-            }
-        }
+    void set_param(void const* ptr, size_t size) override {
 
         if (kernel_) {
              if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, size, const_cast<void*>(ptr)) !=
@@ -613,6 +596,25 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
         }
 
         arg_idx_++;
+
+        /* Set malloc device pointers */
+        auto* ptrs = reinterpret_cast<const void* const*>(ptr);
+        auto ptrs_len = size/sizeof(void*);
+    
+        // TODO: this assumes only malloc pointers are captured, since it only captures ?
+        // variables used inside the kernel it should not be a problem but need to double check.
+        //size_t sz = IRIS::usm_iris_mem_map.size();
+        for(size_t i = 0; i < ptrs_len ; i++){
+            std::cout << "ptrs i: " << i << " " << ptrs[i] << std::endl;
+            if (auto it = IRIS::usm_iris_mem_map.find(const_cast<void*>(ptrs[i])); it != IRIS::usm_iris_mem_map.end()){
+                std::cout << "found in usm_iris_mem_map" << std::endl;
+                if (IRIS::iris_kernel_setmem_off(*kernel_, arg_idx_, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[i]))), 0, IRIS::rw)
+                    != IRIS::SUCCESS){
+                    throw std::runtime_error("iris_kernel_setmem_off() inside set_param failed");
+                }
+                arg_idx_++;
+            }
+        }
     }
 
     void set_buffer_param(rts::buffer& buf, void* h_ptr, rts::memory_domain const& dom,

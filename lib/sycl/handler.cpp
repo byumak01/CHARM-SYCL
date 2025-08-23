@@ -130,7 +130,7 @@ void handler_impl::parallel_for(sycl::nd_range<3> const& range, char const* name
         fprintf(stderr, "not implemented: %s: %d\n", __FILE__, __LINE__);
         abort();
     }
-
+    std::cout << "parallel_for with nd_range handler_impl" << std::endl;
     task_->set_kernel(name, hash);
     task_->set_nd_range(impl::convert(range));
     task_->set_local_mem_size(lmem_);

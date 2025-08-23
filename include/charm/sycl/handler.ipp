@@ -30,7 +30,6 @@ inline void handler::parallel_for_(range<Dimensions> const& range, KernelType co
     static_assert(std::is_trivially_copyable_v<KernelType>,
                   "The kernel function must be a trivially copyable.");
 #endif
-
     using Name = std::remove_cvref_t<KernelName>;
     size_t name_len;
     auto const* name = runtime::__charm_sycl_kernel_name<Name>(name_len);
@@ -48,7 +47,7 @@ inline void handler::parallel_for_(nd_range<Dimensions> const& range,
     static_assert(std::is_trivially_copyable_v<KernelType>,
                   "The kernel function must be a trivially copyable.");
 #endif
-
+    std::cout << "parallel_for_" << std::endl;
     using Name = std::remove_cvref_t<KernelName>;
     size_t name_len;
     auto const* name = runtime::__charm_sycl_kernel_name<Name>(name_len);
@@ -359,7 +358,7 @@ void handler::parallel_for_work_group(range<Dimensions> const& numWorkGroups,
     using Name = std::conditional_t<std::is_same_v<KernelName, detail::unnamed_kernel>,
                                     std::remove_cvref_t<WorkgroupFunctionType>, KernelName>;
     sycl::nd_range<Dimensions> ndr(numWorkGroups * workGroupSize, workGroupSize);
-
+    std::cout << "parallel_for_work_group" << std::endl;
     if constexpr (Dimensions == 1) {
         parallel_for_<Name>(ndr, [fn]() {
             /* scope: wg entry */
@@ -421,7 +420,7 @@ void handler::parallel_for_3(nd_range<Dimensions> const& range, KernelType const
 #endif
     using Name = std::conditional_t<std::is_same_v<KernelName, detail::unnamed_kernel>,
                                     std::remove_cvref_t<KernelType>, KernelName>;
-
+    std::cout << "parallel_for_3" << std::endl;
     parallel_for_work_group<Name>(
         range.get_group_range(), range.get_local_range(), [fn](sycl::group<Dimensions> g) {
             /* scope: wg */

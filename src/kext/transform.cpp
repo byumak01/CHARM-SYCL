@@ -303,21 +303,20 @@ private:
 
         for (auto it = l.begin(); it != l.end(); ++it) {
             auto const type = it->decl()->getType();
-
-            std::cout << "\033[32mit type:\033[0m " << type.getAsString() << std::endl;
+            std::cout << "\033[32m-----------------\033[0m" << std::endl;
+            
+            std::cout << "\033[32mit original type:\033[0m " << type.getAsString() << std::endl;
                     
         if(is_primitive_pointer_type(type) ){
-            std::cout << "Original type: " << type.getAsString() << std::endl;
-            std::cout << "Canonical type: " << type.getCanonicalType().getAsString() << std::endl;
-            std::cout << "\033[32mprimitive type\033[0m" << std::endl;
+            std::cout << "Original type: " << type.getAsString() << "Canonical type: " << type.getCanonicalType().getAsString() << std::endl;
+            
             xcml::expr_ptr primitive_ptr = arg_ptr;
             for (auto const* f : it->path()) {
-                std::cout << "Processing field: " << l.get_field_name(f) << std::endl;
-                std::cout << "Field type: " << f->getType().getAsString() << std::endl;
+                std::cout << "Processing field: " << l.get_field_name(f) << "Field type: " << f->getType().getAsString() << std::endl;
                 primitive_ptr = make_member_ref(primitive_ptr, l.get_field_name(f));
                 
                 if (!f->getType()->isPointerType()) {
-                    std::cout << "Adding addr_of for non-pointer field" << std::endl;
+                    //std::cout << "Adding addr_of for non-pointer field" << std::endl;
                     primitive_ptr = make_addr_of(primitive_ptr);
                 }
             }

@@ -25,6 +25,10 @@ public:
     template <int _Dim = Dimensions, class = std::enable_if_t<(_Dim > 0)>>
     local_accessor(range<Dimensions> const& size, handler& h, property_list const& = {});
 
+    // bymk: iris local acc implementation
+    //template <int _Dim = Dimensions, class = std::enable_if_t<(_Dim > 0)>>
+    //local_accessor(range<Dimensions> const& size, handler& h, nd_range<Dimensions> const& ndr, property_list const& = {});
+
     size_type byte_size() const noexcept {
         return sizeof(DataT) * size();
     }

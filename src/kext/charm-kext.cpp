@@ -30,8 +30,6 @@ int main(int argc, char** argv)
 int kext_main(int argc, char** argv)
 #endif
 {
-    std::cout << "pid from charm_kext.cpp: " << getpid() << std::endl;
-    //sleep(15);
     
     llvm::cl::OptionCategory options("CHARM Options");
 

@@ -28,7 +28,7 @@ clang::QualType remove_cvref(clang::QualType type);
 
 bool is_empty(xcml::compound_stmt_ptr c);
 
-enum accessor_type { NONE = 0, NORMAL, LOCAL, DEVICE };
+enum accessor_type { NONE = 0, NORMAL, LOCAL, DEVICE, LOCAL_IRIS };
 
 bool is_accessor(clang::QualType type, accessor_type& acc);
 

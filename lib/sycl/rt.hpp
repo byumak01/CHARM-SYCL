@@ -244,6 +244,20 @@ private:
     size_t off_;
 };
 
+/* local accessor iris start*/
+
+struct local_accessor_iris_impl final : runtime::local_accessor_iris {
+    explicit local_accessor_iris_impl(intrusive_ptr<handler_impl> const& handler, int dim,
+                                 size_t elem_size, size_t align, range<3> range);
+
+    size_t get_offset() const override;
+
+private:
+    size_t off_;
+};
+
+/* local accessor iris end*/
+
 struct host_accessor_impl final : runtime::host_accessor {
     explicit host_accessor_impl(intrusive_ptr<buffer_impl> const& buf, range<3> range,
                                 id<3> offset, access_mode mode);

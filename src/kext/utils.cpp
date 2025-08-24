@@ -41,6 +41,8 @@ bool is_accessor(clang::QualType type, accessor_type& acc) {
                 acc = accessor_type::LOCAL;
             } else if (name.size() == 29 && name == "sycl::detail::device_accessor") {
                 acc = accessor_type::DEVICE;
+            } else if (name.size() == 25 && name == "sycl::local_accessor_iris") {
+                acc = accessor_type::LOCAL_IRIS;
             }
 
             if (record->bases().empty()) {

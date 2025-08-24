@@ -329,7 +329,7 @@ private:
             auto ptr_ref = primitive_ptr;
             push_expr(wrapper->body, assign_expr(ptr_ref, make_var_ref(ptr_param)));
         }               
-                    
+            // bymk: accessor_type LOCAL_IRIS eklenecek kosula
             if (accessor_type acc_type;
                 is_accessor(type, acc_type) && acc_type == accessor_type::DEVICE) {
                 xcml::expr_ptr acc_ptr = arg_ptr;

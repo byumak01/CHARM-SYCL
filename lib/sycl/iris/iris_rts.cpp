@@ -459,6 +459,8 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
     using kernel_t = typename IRIS::kernel_t;
 
     explicit task_impl() {
+        std::cout << "---------------------------" << std::endl;
+        std::cout << "new iris task_impl created" << std::endl;
         task_.emplace();
         if (IRIS::iris_task_create(&*task_) != IRIS::SUCCESS) {
             throw std::runtime_error("iris_task_create() failed");
@@ -528,6 +530,7 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
 
     void set_kernel(char const* name, uint32_t) override {
         kernel_.emplace();
+        std::cout << "iris rts set_kernel created" << std::endl;
         if (IRIS::iris_kernel_create(name, &*kernel_) != IRIS::SUCCESS) {
             throw std::runtime_error("iris_kernel_create() failed");
         }
@@ -578,9 +581,21 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
 
     void set_local_mem_size(size_t byte) override {
         if (byte > 0) {
+            /*
+            if (kernel_) {
+                if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, size, nullptr) !=
+                    IRIS::SUCCESS) {
+                    throw std::runtime_error("iris_kernel_setarg() inside set_local_mem_size failed");
+                }
+            }
+            // maybe need to use fixed arg_idx_
+            arg_idx_++;
+            */
+            /*
             // TODO
             fprintf(stderr, "Error: Local memory is not supported on IRIS RTS\n");
             std::abort();
+            */
         }
     }
 
@@ -623,7 +638,7 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
         auto& buf_ = static_cast<buffer_impl<IRIS>&>(buf);
         auto const htod = (ma != rts::memory_access::write_only) && !is_host_ && dom.is_host();
         auto const dtoh = (ma != rts::memory_access::write_only) && is_host_ && !dom.is_host();
-
+        std::cout << "set buffer param iris rts called with arg_idx_: " << arg_idx_ << std::endl;
         (void)offset;
         DEBUG_FMT(
             "set_buffer_param(h_ptr={}, dom={}, ma={}, off=[{}, {}, {}], off_byte={}) htod={} "
@@ -673,7 +688,7 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
                     mode = IRIS::rw;
                     break;
             }
-
+            std::cout << "set buffer param iris rts kernel setmem off" << std::endl;
             if (IRIS::iris_kernel_setmem_off(*kernel_, arg_idx_, buf_.get(), offset_byte,
                                              mode) != IRIS::SUCCESS) {
                 throw std::runtime_error("iris_kernel_setmem_off() failed");

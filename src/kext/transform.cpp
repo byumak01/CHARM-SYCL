@@ -304,34 +304,35 @@ private:
         for (auto it = l.begin(); it != l.end(); ++it) {
             auto const type = it->decl()->getType();
             std::cout << "\033[32m-----------------\033[0m" << std::endl;
+            std::cout << "transform.cpp" << std::endl;
             
             std::cout << "\033[32mit original type:\033[0m " << type.getAsString() << std::endl;
                     
-        if(is_primitive_pointer_type(type) ){
-            std::cout << "Original type: " << type.getAsString() << "Canonical type: " << type.getCanonicalType().getAsString() << std::endl;
+            if(is_primitive_pointer_type(type) ){
+                std::cout << "Original type: " << type.getAsString() << "Canonical type: " << type.getCanonicalType().getAsString() << std::endl;
             
-            xcml::expr_ptr primitive_ptr = arg_ptr;
-            for (auto const* f : it->path()) {
-                std::cout << "Processing field: " << l.get_field_name(f) << "Field type: " << f->getType().getAsString() << std::endl;
-                primitive_ptr = make_member_ref(primitive_ptr, l.get_field_name(f));
+                xcml::expr_ptr primitive_ptr = arg_ptr;
+                for (auto const* f : it->path()) {
+                    std::cout << "Processing field: " << l.get_field_name(f) << "Field type: " << f->getType().getAsString() << std::endl;
+                    primitive_ptr = make_member_ref(primitive_ptr, l.get_field_name(f));
                 
-                if (!f->getType()->isPointerType()) {
-                    //std::cout << "Adding addr_of for non-pointer field" << std::endl;
-                    primitive_ptr = make_addr_of(primitive_ptr);
+                    if (!f->getType()->isPointerType()) {
+                        //std::cout << "Adding addr_of for non-pointer field" << std::endl;
+                        primitive_ptr = make_addr_of(primitive_ptr);
+                    }
                 }
-            }
         
-            auto const& ptr_param = info_.nm().gen_var("ptr");
-            std::cout << "ptr_param: " << ptr_param << std::endl;
-            add_param(wrapper, info_.define_type(type), ptr_param);
+                auto const& ptr_param = info_.nm().gen_var("ptr");
+                std::cout << "ptr_param: " << ptr_param << std::endl;
+                add_param(wrapper, info_.define_type(type), ptr_param);
         
-            std::cout << "About to generate assignment" << std::endl;
-            auto ptr_ref = primitive_ptr;
-            push_expr(wrapper->body, assign_expr(ptr_ref, make_var_ref(ptr_param)));
-        }               
-            // bymk: accessor_type LOCAL_IRIS eklenecek kosula
+                std::cout << "About to generate assignment" << std::endl;
+                auto ptr_ref = primitive_ptr;
+                push_expr(wrapper->body, assign_expr(ptr_ref, make_var_ref(ptr_param)));
+            }               
+
             if (accessor_type acc_type;
-                is_accessor(type, acc_type) && acc_type == accessor_type::DEVICE) {
+                is_accessor(type, acc_type) && (acc_type == accessor_type::DEVICE || acc_type == accessor_type::LOCAL_IRIS)) {
                 xcml::expr_ptr acc_ptr = arg_ptr;
                 for (auto const* f : it->path()) {
                     acc_ptr = make_member_ref(acc_ptr, l.get_field_name(f));
@@ -398,7 +399,7 @@ private:
 
         if (op->getBody()) {
             auto _save = info_.scoped_set_captures(record);
-
+            std::cout << "before visit compund stmt" << std::endl; 
             auto body = visit_compound_stmt(info_, op->getBody(), fn, op, true);
 
             push_stmt(wrapper->body, body);

@@ -140,7 +140,7 @@ private:
 /* local accessor iris start*/
 
 template <typename DataT, int Dimensions>
-class local_accessor_iris : detail::common_ref_ops<local_accessor<DataT, Dimensions>> {
+class local_accessor_iris : detail::common_ref_ops<local_accessor_iris<DataT, Dimensions>> {
     friend struct runtime::impl_access;
 
 public:

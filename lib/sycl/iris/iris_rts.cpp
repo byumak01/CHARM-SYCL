@@ -581,16 +581,17 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
 
     void set_local_mem_size(size_t byte) override {
         if (byte > 0) {
-            /*
+            
             if (kernel_) {
-                if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, size, nullptr) !=
+                std::cout << "set_local_mem_size called with arg_idx_: " << arg_idx_ << " and byte: " << byte << std::endl;
+                if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, byte, nullptr) !=
                     IRIS::SUCCESS) {
                     throw std::runtime_error("iris_kernel_setarg() inside set_local_mem_size failed");
                 }
             }
             // maybe need to use fixed arg_idx_
             arg_idx_++;
-            */
+            
             /*
             // TODO
             fprintf(stderr, "Error: Local memory is not supported on IRIS RTS\n");

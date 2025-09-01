@@ -176,6 +176,10 @@ struct decl_visitor : decl_visitor_base<decl_visitor, void> {
             auto const l = layout(ctx, fn_record, true);
             for (auto it = l.begin(); it != l.end(); ++it) {
                 auto const type = it->decl()->getType();
+                std::cout << "\033[32m-----------------\033[0m" << std::endl;
+                std::cout << "decl_visitor.cpp" << std::endl;
+            
+                std::cout << "\033[32mit original type:\033[0m " << type.getAsString() << std::endl;
 
                 if (accessor_type acc_type;
                     ::is_accessor(type, acc_type) && acc_type == accessor_type::LOCAL) {

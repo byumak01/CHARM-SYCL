@@ -36,6 +36,8 @@ int32_t (*iris_interface_20000::iris_init_ptr)(void*, void*, int32_t);
 int32_t (*iris_interface_20000::iris_kernel_create_ptr)(void const*, void*);
 int32_t (*iris_interface_20000::iris_kernel_setarg_ptr)(typename kernel_t::native, int32_t,
                                                         size_t, void*);
+int32_t (*iris_interface_20000::iris_kernel_setsmem_ptr)(typename kernel_t::native, int32_t,
+                                                        size_t);
 int32_t (*iris_interface_20000::iris_kernel_setmem_off_ptr)(typename kernel_t::native, int32_t,
                                                             typename mem_t::native, size_t,
                                                             size_t);
@@ -89,6 +91,7 @@ result<void> iris_interface_20000::init() {
     CHECK_ERROR(load_func(handle_, iris_init_ptr, "iris_init"));
     CHECK_ERROR(load_func(handle_, iris_kernel_create_ptr, "iris_kernel_create"));
     CHECK_ERROR(load_func(handle_, iris_kernel_setarg_ptr, "iris_kernel_setarg"));
+    CHECK_ERROR(load_func(handle_, iris_kernel_setsmem_ptr, "iris_kernel_setsmem"));
     CHECK_ERROR(load_func(handle_, iris_kernel_setmem_off_ptr, "iris_kernel_setmem_off"));
     CHECK_ERROR(load_func(handle_, iris_mem_create_ptr, "iris_mem_create"));
     CHECK_ERROR(load_func(handle_, iris_platform_info_ptr, "iris_platform_info"));
@@ -119,6 +122,7 @@ void iris_interface_20000::close() {
     iris_init_ptr = nullptr;
     iris_kernel_create_ptr = nullptr;
     iris_kernel_setarg_ptr = nullptr;
+    iris_kernel_setsmem_ptr = nullptr;
     iris_kernel_setmem_off_ptr = nullptr;
     iris_mem_create_ptr = nullptr;
     iris_platform_info_ptr = nullptr;

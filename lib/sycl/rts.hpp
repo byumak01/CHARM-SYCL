@@ -136,6 +136,9 @@ struct task {
 
     // 2.c Memory Operations
     virtual void usm_memcpy(void*& dest, void*& src, size_t numBytes){
+        dest = nullptr;
+        src = nullptr;
+        numBytes = 0;
         throw std::runtime_error("usm_memcpy not implemented for this backend");
     } 
 

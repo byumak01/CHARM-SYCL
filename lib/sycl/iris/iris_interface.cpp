@@ -59,6 +59,9 @@ int32_t (*iris_interface_20000::iris_task_info_ptr)(typename task_t::native, int
 int32_t (*iris_interface_20000::iris_task_kernel_object_ptr)(typename task_t::native,
                                                              typename kernel_t::native, int32_t,
                                                              void*, void*, void*);
+int32_t (*iris_interface_20000::iris_task_kernel_object_lmem_ptr)(typename task_t::native,
+                                                                  typename kernel_t::native, int32_t,
+                                                                  void*, void*, void*, size_t);
 int32_t (*iris_interface_20000::iris_task_release_ptr)(typename task_t::native);
 void (*iris_interface_20000::iris_task_retain_ptr)(typename task_t::native, uint8_t);
 int32_t (*iris_interface_20000::iris_task_submit_ptr)(typename task_t::native, int32_t,
@@ -103,6 +106,7 @@ result<void> iris_interface_20000::init() {
     CHECK_ERROR(load_func(handle_, iris_task_cmd_reset_mem_ptr, "iris_task_cmd_reset_mem"));
     CHECK_ERROR(load_func(handle_, iris_task_info_ptr, "iris_task_info"));
     CHECK_ERROR(load_func(handle_, iris_task_kernel_object_ptr, "iris_task_kernel_object"));
+    CHECK_ERROR(load_func(handle_, iris_task_kernel_object_lmem_ptr, "iris_task_kernel_object_lmem"));
     CHECK_ERROR(load_func(handle_, iris_task_release_ptr, "iris_task_release"));
     CHECK_ERROR(load_func(handle_, iris_task_retain_ptr, "iris_task_retain"));
     CHECK_ERROR(load_func(handle_, iris_task_submit_ptr, "iris_task_submit"));

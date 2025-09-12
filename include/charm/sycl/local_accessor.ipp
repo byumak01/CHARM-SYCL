@@ -11,6 +11,8 @@ local_accessor<DataT, Dimensions>::local_accessor(handler& h, property_list cons
                                          sizeof(DataT), alignof(DataT), range<3>(1, 1, 1)))
 #endif
 {
+    std::cout << "local acc constructor size: " << sizeof(DataT) << std::endl;
+    std::cout << "local acc constructor align: " << alignof(DataT) << std::endl;
 }
 
 template <typename DataT, int Dimensions>
@@ -22,6 +24,8 @@ local_accessor<DataT, Dimensions>::local_accessor(range<Dimensions> const& size,
                                          sizeof(DataT), alignof(DataT), detail::extend(size)))
 #endif
 {
+    std::cout << "local acc constructor2 size: " << sizeof(DataT) << std::endl;
+    std::cout << "local acc constructor2 align: " << alignof(DataT) << std::endl;
 }
 
 template <typename DataT, int Dimensions>
@@ -69,91 +73,15 @@ local_accessor<DataT, Dimensions>::get_pointer() const noexcept {
 #ifdef __SYCL_DEVICE_ONLY__
     if constexpr (Dimensions >= 1) {
         runtime::__charm_sycl_assume(off % 16 == 0);
-        return reinterpret_cast<pointer_type>(reinterpret_cast<std::byte*>(ptr) + off);
+        //return reinterpret_cast<pointer_type>(reinterpret_cast<std::byte*>(ptr) + off);
+        return reinterpret_cast<pointer_type>(ptr) + off;
     } else {
-        return reinterpret_cast<pointer_type>(reinterpret_cast<std::byte*>(ptr) + off);
+        //return reinterpret_cast<pointer_type>(reinterpret_cast<std::byte*>(ptr) + off);
+        return reinterpret_cast<pointer_type>(ptr) + off;
     }
 #else
     return reinterpret_cast<pointer_type>(impl_->get_pointer());
 #endif
 }
-
-/* local_accessor_iris start */
-template <typename DataT, int Dimensions>
-template <int, class>
-local_accessor_iris<DataT, Dimensions>::local_accessor_iris(handler& h, property_list const&)
-#ifndef __SYCL_DEVICE_ONLY__
-    : impl_(runtime::make_local_accessor_iris(runtime::impl_access::get_impl(h), Dimensions,
-                                         sizeof(DataT), alignof(DataT), range<3>(1, 1, 1)))
-#endif
-{
-}
-
-template <typename DataT, int Dimensions>
-template <int, class>
-local_accessor_iris<DataT, Dimensions>::local_accessor_iris(range<Dimensions> const& size, handler& h,
-                                                  property_list const&)
-#ifndef __SYCL_DEVICE_ONLY__
-    : impl_(runtime::make_local_accessor_iris(runtime::impl_access::get_impl(h), Dimensions,
-                                         sizeof(DataT), alignof(DataT), detail::extend(size)))
-#endif
-{
-}
-
-template <typename DataT, int Dimensions>
-typename local_accessor_iris<DataT, Dimensions>::size_type local_accessor_iris<DataT, Dimensions>::size()
-    const noexcept {
-#ifdef __SYCL_DEVICE_ONLY__
-    if constexpr (Dimensions == 1) {
-        return size0;
-    } else if constexpr (Dimensions == 2) {
-        return size0 * size1;
-    } else {
-        return size0 * size1 * size2;
-    }
-#else
-    return impl_->size();
-#endif
-}
-
-template <typename DataT, int Dimensions>
-range<Dimensions> local_accessor_iris<DataT, Dimensions>::get_range() const {
-#ifdef __SYCL_DEVICE_ONLY__
-    if constexpr (Dimensions == 1) {
-        return {size0};
-    } else if constexpr (Dimensions == 2) {
-        return {size0, size1};
-    } else {
-        return {size0, size1, size2};
-    }
-#else
-    auto const& r = impl_->get_range();
-
-    if constexpr (Dimensions == 1) {
-        return {r[0]};
-    } else if constexpr (Dimensions == 2) {
-        return {r[0], r[1]};
-    } else {
-        return {r[0], r[1], r[2]};
-    }
-#endif
-}
-
-template <typename DataT, int Dimensions>
-typename local_accessor_iris<DataT, Dimensions>::pointer_type
-local_accessor_iris<DataT, Dimensions>::get_pointer() const noexcept {
-#ifdef __SYCL_DEVICE_ONLY__
-    if constexpr (Dimensions >= 1) {
-        runtime::__charm_sycl_assume(off % 16 == 0);
-        return reinterpret_cast<pointer_type>(reinterpret_cast<std::byte*>(ptr) + off);
-    } else {
-        return reinterpret_cast<pointer_type>(reinterpret_cast<std::byte*>(ptr) + off);
-    }
-#else
-    return reinterpret_cast<pointer_type>(impl_->get_pointer());
-#endif
-}
-
-/* local accessor iris end*/
 
 CHARM_SYCL_END_NAMESPACE

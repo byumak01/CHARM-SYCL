@@ -396,6 +396,8 @@ void handler_impl::fill_zero(accessor_ptr const& src, size_t len_byte) {
 size_t handler_impl::alloc_smem(size_t byte, size_t align, bool is_array) {
     auto off = lmem_;
 
+    std::cout << "alloc_smem size to allocate: " << byte << "current offset: " << off << std::endl;
+
     if (is_array) {
         align = std::max<size_t>(align, 16);
     }
@@ -405,6 +407,8 @@ size_t handler_impl::alloc_smem(size_t byte, size_t align, bool is_array) {
     }
 
     lmem_ = off + byte;
+
+    std::cout << "alloc_smem lmem size after update: " << lmem_ << std::endl;
 
     return off;
 }

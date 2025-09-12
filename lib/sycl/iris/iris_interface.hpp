@@ -235,6 +235,20 @@ public:
     }
 
 private:
+    static int32_t (*iris_task_kernel_object_lmem_ptr)(typename task_t::native,
+                                                  typename kernel_t::native, int32_t, void*,
+                                                  void*, void*, size_t);
+
+public:
+    static auto iris_task_kernel_object_lmem(task_t param0, kernel_t param1, int32_t param2,
+                                        size_t* param3, size_t* param4, size_t* param5, size_t param6) {
+        return detail::wrap<int32_t>(iris_task_kernel_object_lmem_ptr(
+            detail::unwrap(param0), detail::unwrap(param1), detail::unwrap(param2),
+            detail::unwrap(param3), detail::unwrap(param4), detail::unwrap(param5),
+            detail::unwrap(param6)));
+    }
+
+private:
     static int32_t (*iris_task_release_ptr)(typename task_t::native);
 
 public:

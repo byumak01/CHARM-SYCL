@@ -530,7 +530,6 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
 
     void set_kernel(char const* name, uint32_t) override {
         kernel_.emplace();
-        std::cout << "iris rts set_kernel created" << std::endl;
         if (IRIS::iris_kernel_create(name, &*kernel_) != IRIS::SUCCESS) {
             throw std::runtime_error("iris_kernel_create() failed");
         }
@@ -606,9 +605,9 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
         // variables used inside the kernel it should not be a problem but need to double check.
         //size_t sz = IRIS::usm_iris_mem_map.size();
         for(size_t i = 0; i < ptrs_len ; i++){
-            std::cout << "ptrs i: " << i << " " << ptrs[i] << std::endl;
+            //std::cout << "ptrs i: " << i << " " << ptrs[i] << std::endl;
             if (auto it = IRIS::usm_iris_mem_map.find(const_cast<void*>(ptrs[i])); it != IRIS::usm_iris_mem_map.end()){
-                std::cout << "found in usm_iris_mem_map" << std::endl;
+                //std::cout << "found in usm_iris_mem_map" << std::endl;
                 if (IRIS::iris_kernel_setmem_off(*kernel_, arg_idx_, *(reinterpret_cast<IRIS::mem_t*>(const_cast<void*>(ptrs[i]))), 0, IRIS::rw)
                     != IRIS::SUCCESS){
                     throw std::runtime_error("iris_kernel_setmem_off() inside set_param failed");
@@ -674,7 +673,6 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
                     mode = IRIS::rw;
                     break;
             }
-            std::cout << "set buffer param iris rts kernel setmem off" << std::endl;
             if (IRIS::iris_kernel_setmem_off(*kernel_, arg_idx_, buf_.get(), offset_byte,
                                              mode) != IRIS::SUCCESS) {
                 throw std::runtime_error("iris_kernel_setmem_off() failed");
@@ -812,6 +810,7 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
             DEBUG_FMT("iris_task_kernel_object: this={}", format::ptr(this));
             
             // set local memory
+            /*
             if (lmem_ > 0) {
                 
                 if (kernel_) {
@@ -823,11 +822,12 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
                 }
                 arg_idx_++;
             }
+            */
             
-
-            if (IRIS::iris_task_kernel_object(*task_, *kernel_, 3, nullptr, par_.gws.data(),
-                                              par_.lws.data()) != IRIS::SUCCESS) {
-                throw std::runtime_error("iris_task_kernel_object() failed");
+            //std::cout << "before task kernel object" << std::endl;
+            if (IRIS::iris_task_kernel_object_lmem(*task_, *kernel_, 3, nullptr, par_.gws.data(),
+                                              par_.lws.data(), lmem_) != IRIS::SUCCESS) {
+                throw std::runtime_error("iris_task_kernel_object_lmem() failed");
             }
         } else if (hostfn_) {
             // TODO:
@@ -837,20 +837,23 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
 
         if (!empty_) {
             DEBUG_FMT("iris_task_submit: this={}", format::ptr(this));
+            //std::cout << "before task submit" << std::endl;
 
             if (IRIS::iris_task_submit(*task_, policy_, nullptr, 0) != IRIS::SUCCESS) {
                 throw std::runtime_error("iris_task_submit");
             }
+            //std::cout << "after task submit" << std::endl;
         }
 
         auto ev = std::make_unique<event_impl<IRIS>>(*task_, empty_);
+        //std::cout << "after event creation" << std::endl;
         task_.reset();
+        //std::cout << "after task reset" << std::endl;
 
         return ev;
     }
 
 private:
-    size_t lmem_ = 0;
     std::optional<task_t> task_;
     std::optional<kernel_t> kernel_;
     parallel_params par_;
@@ -859,6 +862,7 @@ private:
     bool is_host_ = false;
     bool profiling_enabled = false;
     int arg_idx_ = 0;
+    size_t lmem_ = 0;
     bool empty_ = true;
 };
 

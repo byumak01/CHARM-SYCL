@@ -52,9 +52,7 @@ struct device_accessor {
 #else
         : impl_()
 #endif
-    {
-        std::cout << "device accessor created" << std::endl;
-    }
+    {}
 
     /* Available only when: (Dimensions > 0) */
     template <typename AllocatorT, int _Dim = Dimensions, class = std::enable_if<(_Dim > 0)>>
@@ -231,7 +229,6 @@ struct device_accessor {
 #ifdef __SYCL_DEVICE_ONLY__
         return reinterpret_cast<pointer_type>(ptr);
 #else
-        std::cout << "device_accessor.hpp:233" << std::endl;
         return reinterpret_cast<pointer_type>(this->impl_->get_pointer());
 #endif
     }

@@ -383,7 +383,8 @@ private:
                         "sycl::detail::device_accessor<dummy, {}, (sycl::access_mode){}>", dim,
                         mode);
                 } else if (acc_type == accessor_type::LOCAL) {
-                    name = fmt::format("sycl::local_accessor<dummy, {}>", dim);
+                    auto const data_type = cts->getTemplateArgs()[0].getAsType().getAsString();
+                    name = fmt::format("sycl::local_accessor<{}, {}>", data_type, dim);
                 }
 
                 desc_buffer_ += fmt::format("acc_desc<::{}, {}>{{}}", name, it->offset_of());

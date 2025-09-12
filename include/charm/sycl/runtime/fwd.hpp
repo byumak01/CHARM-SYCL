@@ -14,9 +14,6 @@ struct event;
 struct handler;
 struct host_accessor;
 struct local_accessor;
-/* local accessor iris start*/
-struct local_accessor_iris;
-/* local accessor iris end*/
 struct platform;
 struct property_list;
 struct queue;
@@ -29,9 +26,6 @@ using event_ptr = intrusive_ptr<event>;
 using handler_ptr = intrusive_ptr<handler>;
 using host_accessor_ptr = intrusive_ptr<host_accessor>;
 using local_accessor_ptr = intrusive_ptr<local_accessor>;
-/* local accessor iris start*/
-using local_accessor_iris_ptr = intrusive_ptr<local_accessor_iris>;
-/* local accessor iris end*/
 using platform_ptr = intrusive_ptr<platform>;
 using queue_ptr = intrusive_ptr<queue>;
 
@@ -43,11 +37,6 @@ local_accessor_ptr make_local_accessor(handler_ptr const& handler, int dim, size
 
 host_accessor_ptr make_host_accessor(buffer_ptr const& buf, range<3> range, id<3> offset,
                                      access_mode mode);
-
-/* local accessor iris start*/
-local_accessor_iris_ptr make_local_accessor_iris(handler_ptr const& handler, int dim, size_t elem_size,
-                                       size_t align, range<3> range);
-/* local accessor iris end*/
 
 // TODO: Use Allocator
 buffer_ptr make_buffer(void* init_ptr, size_t elemsize, range<3> const& rng);

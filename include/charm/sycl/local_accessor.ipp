@@ -11,8 +11,6 @@ local_accessor<DataT, Dimensions>::local_accessor(handler& h, property_list cons
                                          sizeof(DataT), alignof(DataT), range<3>(1, 1, 1)))
 #endif
 {
-    std::cout << "local acc constructor size: " << sizeof(DataT) << std::endl;
-    std::cout << "local acc constructor align: " << alignof(DataT) << std::endl;
 }
 
 template <typename DataT, int Dimensions>
@@ -24,8 +22,6 @@ local_accessor<DataT, Dimensions>::local_accessor(range<Dimensions> const& size,
                                          sizeof(DataT), alignof(DataT), detail::extend(size)))
 #endif
 {
-    std::cout << "local acc constructor2 size: " << sizeof(DataT) << std::endl;
-    std::cout << "local acc constructor2 align: " << alignof(DataT) << std::endl;
 }
 
 template <typename DataT, int Dimensions>
@@ -73,11 +69,10 @@ local_accessor<DataT, Dimensions>::get_pointer() const noexcept {
 #ifdef __SYCL_DEVICE_ONLY__
     if constexpr (Dimensions >= 1) {
         runtime::__charm_sycl_assume(off % 16 == 0);
-        //return reinterpret_cast<pointer_type>(reinterpret_cast<std::byte*>(ptr) + off);
-        return reinterpret_cast<pointer_type>(ptr) + off;
+
+        return reinterpret_cast<pointer_type>(static_cast<char*>(ptr) + off);
     } else {
-        //return reinterpret_cast<pointer_type>(reinterpret_cast<std::byte*>(ptr) + off);
-        return reinterpret_cast<pointer_type>(ptr) + off;
+        return reinterpret_cast<pointer_type>(static_cast<char*>(ptr) + off);
     }
 #else
     return reinterpret_cast<pointer_type>(impl_->get_pointer());

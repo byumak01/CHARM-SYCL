@@ -332,7 +332,7 @@ private:
             }               
 
             if (accessor_type acc_type;
-                is_accessor(type, acc_type) && (acc_type == accessor_type::DEVICE || acc_type == accessor_type::LOCAL_IRIS)) {
+                is_accessor(type, acc_type) && acc_type == accessor_type::DEVICE) {
                 xcml::expr_ptr acc_ptr = arg_ptr;
                 for (auto const* f : it->path()) {
                     acc_ptr = make_member_ref(acc_ptr, l.get_field_name(f));
@@ -383,8 +383,7 @@ private:
                         "sycl::detail::device_accessor<dummy, {}, (sycl::access_mode){}>", dim,
                         mode);
                 } else if (acc_type == accessor_type::LOCAL) {
-                    auto const data_type = cts->getTemplateArgs()[0].getAsType().getAsString();
-                    name = fmt::format("sycl::local_accessor<{}, {}>", data_type, dim);
+                    name = fmt::format("sycl::local_accessor<dummy, {}>", dim);
                 }
 
                 desc_buffer_ += fmt::format("acc_desc<::{}, {}>{{}}", name, it->offset_of());
@@ -400,7 +399,7 @@ private:
 
         if (op->getBody()) {
             auto _save = info_.scoped_set_captures(record);
-            std::cout << "before visit compund stmt" << std::endl; 
+
             auto body = visit_compound_stmt(info_, op->getBody(), fn, op, true);
 
             push_stmt(wrapper->body, body);

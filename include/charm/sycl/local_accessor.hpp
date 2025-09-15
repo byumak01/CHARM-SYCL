@@ -40,12 +40,12 @@ public:
     }
 
     range<Dimensions> get_range() const;
-
+    
     template <int _Dim = Dimensions, class = std::enable_if_t<_Dim == 0>>
     inline CHARM_SYCL_INLINE operator reference() const {
         return *this->get_pointer();
     }
-
+    
     template <int _Dim = Dimensions, class = std::enable_if_t<_Dim == 0>>
     inline CHARM_SYCL_INLINE const local_accessor& operator=(const value_type& rhs) const {
         *this->get_pointer() = rhs;
@@ -121,10 +121,7 @@ private:
 
 #ifndef __SYCL_DEVICE_ONLY__
     void into_device() {
-        off = this->impl_->get_offset() / sizeof(DataT) ;
-        std::cout << "into_device offset: " << off << std::endl;
-        std::cout << "this->impl_->get_offset(): " << this->impl_->get_offset() << std::endl;
-        std::cout << "sizeof(DataT): " << sizeof(DataT) << std::endl;
+        off = this->impl_->get_offset();
         size0 = this->impl_->get_range()[0];
         size1 = this->impl_->get_range()[1];
         size2 = this->impl_->get_range()[2];

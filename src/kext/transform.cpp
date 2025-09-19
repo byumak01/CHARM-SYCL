@@ -416,6 +416,9 @@ private:
             type.removeLocalConst();
         }
 
+        std::cout << "---- transform.cpp add_local_var ----" << std::endl;
+        std::cout << "name: " << name << std::endl;
+
         return xcml::utils::add_local_var(scope, info_.define_type(type), name, init);
     }
 

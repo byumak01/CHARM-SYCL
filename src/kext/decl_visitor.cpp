@@ -17,6 +17,10 @@ struct decl_visitor : decl_visitor_base<decl_visitor, void> {
         auto const& name = info_.rename_sym(decl);
         auto const& type = info_.define_type(var_type(decl));
 
+        std::cout << "---- decl_visitor ----" << std::endl;
+        std::cout << "name: " << name << std::endl;
+        std::cout << "type: " << type << std::endl;
+ 
         if (auto const* init = decl->getInit()) {
             if (auto const* list = clang::dyn_cast<clang::InitListExpr>(init)) {
                 if (!decl->getType()->isArrayType()) {

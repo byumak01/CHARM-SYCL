@@ -135,6 +135,9 @@ struct visitor_base {
                               bool direct, context const& = context());
 
     xcml::expr_ptr visit_expr_val(clang::Expr const* expr, context const& = context()) {
+        std::cout << "---- visit_expr_val ----" << std::endl;
+        std::cout << "Expression type: " << expr->getType().getAsString() << std::endl;
+        std::cout << "Expression kind: " << expr->getStmtClassName() << std::endl;
         return visit_expr_val(scope_, expr);
     }
 
@@ -144,9 +147,55 @@ struct visitor_base {
         auto const type = expr_type(expr);
 
         if (!type.isNull() && type->isReferenceType()) {
+            std::cout << "deref called" << std::endl;
             return deref(node);
         }
         return node;
+    }
+
+    xcml::expr_ptr visit_expr_val_with_deref_check(clang::Expr const* expr, std::string op_type) {
+        auto result = visit_expr_val(expr);
+        if (op_type=="plus_expr"){
+            if (is_zero_dim_local_accessor_conversion(expr)) {
+                std::cout << "Dereferencing 0D local accessor in binary operation" << std::endl;
+                result = u::make_deref(result);
+            }
+        }
+        return result;
+    }
+
+    bool is_zero_dim_local_accessor_conversion(clang::Expr const* expr) {
+        if (auto cast_expr = clang::dyn_cast<clang::ImplicitCastExpr>(expr)) {
+            if (cast_expr->getCastKind() == clang::CK_LValueToRValue) {
+                if (auto sub_cast = clang::dyn_cast<clang::ImplicitCastExpr>(cast_expr->getSubExpr())) {
+                    if (sub_cast->getCastKind() == clang::CK_UserDefinedConversion) {
+                        // NOW CHECK: Is this actually a 0D local_accessor?
+                        if (auto member_call = clang::dyn_cast<clang::CXXMemberCallExpr>(sub_cast->getSubExpr())) {
+                            if (auto method = clang::dyn_cast<clang::CXXConversionDecl>(member_call->getMethodDecl())) {
+                                // Check if the object is a 0D local_accessor
+                                auto obj_expr = member_call->getImplicitObjectArgument();
+                                auto obj_type = obj_expr->getType();
+                                
+                                if (auto record = obj_type->getAsCXXRecordDecl()) {
+                                    if (auto template_decl = clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(record)) {
+                                        if (template_decl->getSpecializedTemplate()->getName() == "local_accessor") {
+                                            // Check dimension parameter
+                                            std::cout << "check: " << std::endl;
+                                            auto const& args = template_decl->getTemplateArgs();
+                                            if (args.size() > 1 && args[1].getKind() == clang::TemplateArgument::Integral) {
+                                                std::cout << "halo" << std::endl;
+                                                return args[1].getAsIntegral().getExtValue() == 0;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     xcml::expr_ptr visit_expr_ref(clang::Expr const* expr, context const& = context()) {
@@ -160,10 +209,84 @@ struct visitor_base {
                                             clang::FunctionDecl const* decl);
 
 protected:
+    /*
     void push_expr(clang::Expr const* expr, xcml::expr_ptr const& node) {
         push_expr(scope_, expr, node);
     }
-
+    */
+    void push_expr(clang::Expr const* expr, xcml::expr_ptr const& node) {
+    std::cout << "\n=== PUSH_EXPR DEBUG ===" << std::endl;
+    
+    // 1. Print expression info if available
+    if (expr) {
+        std::cout << "Clang Expression Info:" << std::endl;
+        std::cout << "  Type: " << expr->getStmtClassName() << std::endl;
+        std::cout << "  QualType: " << expr->getType().getAsString() << std::endl;
+        
+        // Check if it's a specific type we care about
+        if (auto call_expr = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
+            if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(call_expr->getCalleeDecl())) {
+                std::cout << "  Method: " << method->getNameAsString() << std::endl;
+                if (auto conv = clang::dyn_cast<clang::CXXConversionDecl>(method)) {
+                    std::cout << "  -> CONVERSION OPERATOR to: " 
+                              << conv->getReturnType().getAsString() << std::endl;
+                    std::cout << "  -> Returns reference: " 
+                              << (conv->getReturnType()->isReferenceType() ? "YES" : "NO") << std::endl;
+                }
+            }
+        } else if (auto member_expr = clang::dyn_cast<clang::MemberExpr>(expr)) {
+            std::cout << "  Member: " << member_expr->getMemberNameInfo().getAsString() << std::endl;
+        } else if (auto decl_ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
+            std::cout << "  Variable: " << decl_ref->getNameInfo().getAsString() << std::endl;
+        }
+        
+        // Print the AST structure for this expression
+        std::cout << "  AST Dump:" << std::endl;
+        expr->dump();
+    } else {
+        std::cout << "Clang Expression: NULL" << std::endl;
+    }
+    
+    // 2. Print XCML node info
+    std::cout << "\nXCML Node Info:" << std::endl;
+    if (node) {
+        std::cout << "  Node type: " << node->node_name() << std::endl;
+        
+        // Try to identify what kind of node it is
+        if (auto var_ref = xcml::var_ref::dyncast(node)) {
+            std::cout << "  -> VAR_REF: " << var_ref->name << std::endl;
+        } else if (auto func_call = xcml::function_call::dyncast(node)) {
+            if (auto func_addr = xcml::func_addr::dyncast(func_call->function)) {
+                std::cout << "  -> FUNCTION_CALL: " << func_addr->name << std::endl;
+            }
+        } else if (auto member_ref = xcml::member_ref::dyncast(node)) {
+            std::cout << "  -> MEMBER_REF: " << member_ref->member << std::endl;
+        } else if (auto assign_expr = xcml::assign_expr::dyncast(node)) {
+            std::cout << "  -> ASSIGNMENT" << std::endl;
+        } else if (auto plus_expr = xcml::plus_expr::dyncast(node)) {
+            std::cout << "  -> PLUS_EXPR" << std::endl;
+        } else if (auto pointer_ref = xcml::pointer_ref::dyncast(node)) {
+            std::cout << "  -> POINTER_REF (dereference)" << std::endl;
+        }
+        
+        // Dump the XCML node structure
+        std::cout << "  XCML Dump:" << std::endl;
+        xcml::dump_node(node);
+    } else {
+        std::cout << "XCML Node: NULL" << std::endl;
+    }
+    
+    // 3. Show context info
+    std::cout << "\nContext Info:" << std::endl;
+    std::cout << "  Current function: " << (current_func_ ? "available" : "none") << std::endl;
+    std::cout << "  Is kernel: " << (current_is_kernel_ ? "YES" : "NO") << std::endl;
+    std::cout << "  Scope symbols count: " << scope_->symbols.size() << std::endl;
+    
+    std::cout << "========================\n" << std::endl;
+    
+    // Call the original function
+    push_expr(scope_, expr, node);
+}
     template <class Node, class HasLoc>
     void set_loc(Node const& node, HasLoc const* expr) {
         auto& sm = ast_.getSourceManager();

@@ -364,6 +364,9 @@ inline xcml::pointer_ref_ptr member_array_ref(xcml::var_ref_ptr const& ref,
     aref->value = ref;
     aref->member = name;
 
+    std::cout << "---- member_array_ref ----" << std::endl;
+    std::cout << "member name: " << aref->member << std::endl;
+
     auto pr = new_pointer_ref();
 
     if (index > 0) {
@@ -395,6 +398,7 @@ inline auto make_cast(type_ptr type, xcml::expr_ptr expr) {
 
 inline pointer_ref_ptr make_deref(expr_ptr const& expr) {
     auto pr = new_pointer_ref();
+    std::cout << "---- make_deref ----" << std::endl;
     pr->expr = expr;
     return pr;
 }
@@ -452,6 +456,10 @@ inline xcml::var_ref_ptr add_local_var(xcml::compound_stmt_ptr const& scope,
     auto decl = new_var_decl();
     decl->name = name;
 
+    std::cout << "---- add_local_var -----" << std::endl;
+    std::cout << "sym->type: " << sym->type << std::endl;
+    std::cout << "sym->name: " << sym->name << std::endl;
+
     auto ref = new_var_ref();
     ref->name = name;
 
@@ -464,6 +472,7 @@ inline xcml::var_ref_ptr add_local_var(xcml::compound_stmt_ptr const& scope,
     }
 
     if (init) {
+        std::cout << "xcml::expr_ptr init: " << init->type << std::endl;
         push_expr(scope, assign_expr(ref, init));
     }
 

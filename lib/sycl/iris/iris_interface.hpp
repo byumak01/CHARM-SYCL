@@ -111,16 +111,6 @@ public:
     }
 
 private:
-    static int32_t (*iris_kernel_setsmem_ptr)(typename kernel_t::native, int32_t, size_t);
-
-public:
-    static auto iris_kernel_setsmem(kernel_t param0, int32_t param1, size_t param2) {
-        return detail::wrap<int32_t>(
-            iris_kernel_setsmem_ptr(detail::unwrap(param0), detail::unwrap(param1),
-                                   detail::unwrap(param2)));
-    }
-
-private:
     static int32_t (*iris_kernel_setmem_off_ptr)(typename kernel_t::native, int32_t,
                                                  typename mem_t::native, size_t, size_t);
 

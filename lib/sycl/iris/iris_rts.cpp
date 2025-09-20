@@ -808,22 +808,7 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
 
         if (kernel_) {
             DEBUG_FMT("iris_task_kernel_object: this={}", format::ptr(this));
-            
-            // set local memory
-            /*
-            if (lmem_ > 0) {
-                
-                if (kernel_) {
-                    std::cout << "submit with arg_idx_: " << arg_idx_ << " and lmem: " << lmem_ << std::endl;
-                    if (IRIS::iris_kernel_setsmem(*kernel_, arg_idx_, lmem_) !=
-                        IRIS::SUCCESS) {
-                        throw std::runtime_error("iris_kernel_setarg() inside set_local_mem_size failed");
-                    }
-                }
-                arg_idx_++;
-            }
-            */
-            
+
             //std::cout << "before task kernel object" << std::endl;
             if (IRIS::iris_task_kernel_object_lmem(*task_, *kernel_, 3, nullptr, par_.gws.data(),
                                               par_.lws.data(), lmem_) != IRIS::SUCCESS) {

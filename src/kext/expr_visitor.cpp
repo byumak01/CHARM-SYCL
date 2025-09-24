@@ -56,7 +56,7 @@ private:                                                                        
                                       clang::Expr const* rhs, EXTRA_ARGS) {            \
         auto node = u::new_##xcml_type();                                              \
         /*node->lhs = visit_expr_val_with_deref_check(lhs, #xcml_type); */                 \
-        /*node->rhs = visit_expr_val_with_deref_check(rhs, #xcml_type); */                \
+        /*node->rhs = visit_expr_val_with_deref_check(rhs, #xcml_type);*/                 \
         node->lhs = visit_expr_val(lhs); \
         node->rhs = visit_expr_val(rhs); \
         return add(expr, node);                                                        \
@@ -138,8 +138,6 @@ public:                                                                         
                                             EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
 
-        std::cout << "---- VisitCXXOperatorCallExpr ----" << std::endl;
-
         if (auto const* method = clang::dyn_cast<clang::CXXMethodDecl>(expr->getCalleeDecl());
             method &&
             (method->isCopyAssignmentOperator() || method->isMoveAssignmentOperator())) {
@@ -148,7 +146,6 @@ public:                                                                         
 #else
             auto const type = method->getThisType();
 #endif
-            std::cout << "type: " << type.getAsString() << std::endl;
             if (type.isTriviallyCopyableType(ast_)) {
                 return create_assign_expr(expr, expr->getArg(0), expr->getArg(1));
             }
@@ -186,16 +183,12 @@ public:                                                                         
         // cast_expr->type = info_.define_type(ast_.VoidPtrTy);
         cast_expr->value = add_expr;
 
-        std::cout << "---- VisitArraySubscriptExpr ----" << std::endl;
-
         return add(expr, cast_expr, &cast_expr->type);
     }
 
     xcml::expr_ptr VisitCXXFunctionalCastExpr(clang::CXXFunctionalCastExpr const* expr,
                                               EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
-
-        std::cout << "---- VisitCXXFunctionalCastExpr ----" << std::endl;
 
         if (is_noop_cast(expr) || expr->getCastKind() == clang::CK_ConstructorConversion) {
             return Visit(expr->getSubExpr());
@@ -206,9 +199,6 @@ public:                                                                         
 
     xcml::expr_ptr VisitCastExpr(clang::CastExpr const* expr, EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
-
-        std::cout << "---- VisitCastExpr ----" << std::endl;
-
 
         if (clang::isa<clang::CXXConstCastExpr>(expr)) {
             return do_integral_cast(expr);
@@ -221,13 +211,9 @@ public:                                                                         
         if (is_base_cast(expr)) {
             return do_base_cast(expr);
         }
-        std::cout << "before any visit call " << std::endl;
         if (expr->getCastKind() == clang::CK_LValueToRValue) {
-            std::cout << "before visit call no 1" << std::endl;
             auto sub = Visit(expr->getSubExpr());
-            std::cout << "after visit call no 1" << std::endl;
             if (point_to_refenrece(info_, expr)) {
-                std::cout << "point_to_refenrece" << std::endl;
                 sub = u::make_deref(sub);
             }
 
@@ -235,22 +221,18 @@ public:                                                                         
         }
 
         if (is_noop_cast(expr)) {
-            std::cout << "before visit call no 2" << std::endl;
             return Visit(expr->getSubExpr());
         }
 
         if (expr->getCastKind() == clang::CK_UserDefinedConversion ||
             expr->getCastKind() == clang::CK_ConstructorConversion) {
-            std::cout << "before visit call no 3" << std::endl;
             return Visit(expr->getSubExpr());
         }
 
         if (expr->getCastKind() == clang::CK_VectorSplat) {
             auto call = vec_call("__charm_sycl_vec_splat", expr);
 
-            std::cout << "before visit call no 1" << std::endl;
             call->arguments.push_back(Visit(expr->getSubExpr()));
-            std::cout << "after visit call no 4" << std::endl;
 
             return call;
         }
@@ -261,7 +243,6 @@ public:                                                                         
     xcml::expr_ptr VisitMemberExpr(clang::MemberExpr const* expr, bool direct = false,
                                    context const& = context()) {
         PUSH_CONTEXT(expr);
-        std::cout << "---- VisitMemberExpr ----" << std::endl;
         auto ref = xcml::new_member_ref();
 
         auto base_type = expr_type(expr->getBase());
@@ -281,7 +262,6 @@ public:                                                                         
 
     xcml::expr_ptr VisitCXXThisExpr(clang::CXXThisExpr const* expr, EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
-        std::cout << "---- VisitCXXThisExpr ----" << std::endl;
 
         return this_ref();
     }
@@ -291,9 +271,6 @@ public:                                                                         
 
         auto type = expr->getType();
         type.removeLocalConst();
-
-        std::cout << "---- VisitCXXConstructExpr ----" << std::endl;
-        std::cout << "type: " << type.getAsString() << std::endl;
 
         auto var =
             u::add_local_var(scope_, info_.define_type(type), info_.nm().gen_var("temp"));
@@ -314,8 +291,6 @@ public:                                                                         
 
         auto x = xcml::new_var_ref();
         x->name = info_.rename_sym(vd);
-        std::cout << "---- var_ref ----" << std::endl;
-        std::cout << "name: " << x->name << std::endl;
         return x;
     }
 
@@ -327,15 +302,11 @@ public:                                                                         
         } else {
             x->member = fd->getNameAsString();
         }
-        std::cout << "---- field_ref ----" << std::endl;
-        std::cout << "memer: " << x->member << std::endl;
         return x;
     }
 
     xcml::expr_ptr VisitDeclRefExpr(clang::DeclRefExpr const* expr, EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
-
-        std::cout << "---- VisitDeclRefExpr ----" << std::endl;
 
         auto const* vd = expr->getDecl();
 
@@ -399,9 +370,6 @@ public:                                                                         
                                                EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
         auto const& type = info_.define_type(expr->getType());
-
-        std::cout << "---- VisitCXXTemporaryObjectExpr ----" << std::endl;
-        std::cout << "type: " << type << std::endl;
         
         auto var = u::add_local_var(scope_, type, info_.nm().gen_var("temp"));
 
@@ -420,8 +388,6 @@ public:                                                                         
     xcml::expr_ptr VisitIntegerLiteral(clang::IntegerLiteral const* lit, EXTRA_ARGS) {
         PUSH_CONTEXT(lit);
 
-        std::cout << "---- VisitIntegerLiteral ----" << std::endl;
-
         auto x = xcml::new_int_constant();
         auto type = lit->getType();
         auto const& value = lit->getValue();
@@ -438,8 +404,6 @@ public:                                                                         
 
     xcml::expr_ptr VisitFloatingLiteral(clang::FloatingLiteral const* lit, EXTRA_ARGS) {
         PUSH_CONTEXT(lit);
-
-        std::cout << "---- VisitFloatingLiteral ----" << std::endl;
         
         std::array<char, 100> buff;
         lit->getValue().convertToHexString(buff.data(), 0, false,
@@ -455,8 +419,6 @@ public:                                                                         
     xcml::expr_ptr VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr const* expr,
                                                  EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
-
-        std::cout << "---- VisitUnaryExprOrTypeTraitExpr ----" << std::endl;
 
         switch (expr->getKind()) {
             case clang::UETT_SizeOf: {
@@ -477,14 +439,12 @@ public:                                                                         
     xcml::expr_ptr VisitParenExpr(clang::ParenExpr const* expr, EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
 
-        std::cout << "---- VisitParenExpr ----" << std::endl;
-
         return Visit(expr->getSubExpr());
     }
 
     xcml::expr_ptr VisitStmtExpr(clang::StmtExpr const* expr, EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
-        std::cout << "---- VisitStmtExpr ----" << std::endl;
+
         xcml::expr_ptr val;
 
         descend_compound_stmt(scope_, expr->getSubStmt(), &val);
@@ -495,7 +455,6 @@ public:                                                                         
     xcml::expr_ptr VisitConditionalOperator(clang::ConditionalOperator const* expr,
                                             EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
-        std::cout << "---- VisitConditionalOperator ----" << std::endl;
         auto node = u::new_cond_expr();
 
         node->cond = visit_expr_val(expr->getCond());
@@ -508,7 +467,6 @@ public:                                                                         
     xcml::expr_ptr VisitCompoundLiteralExpr(clang::CompoundLiteralExpr const* expr,
                                             EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
-        std::cout << "---- VisitCompoundLiteralExpr ----" << std::endl;
         if (is_vec(expr)) {
             auto const* init = clang::dyn_cast<clang::InitListExpr>(expr->getInitializer());
             auto call = vec_call("__charm_sycl_vec", expr);
@@ -525,7 +483,6 @@ public:                                                                         
 
     xcml::expr_ptr VisitLambdaExpr(clang::LambdaExpr const* expr, EXTRA_ARGS) {
         PUSH_CONTEXT(expr);
-        std::cout << "---- VisitLambdaExpr ----" << std::endl;
         auto const* klass = expr->getLambdaClass();
         auto const& klass_type = info_.define_type(ast_.getRecordType(klass));
         auto obj = u::add_local_var(scope_, klass_type, info_.nm().gen_var("lambda"));
@@ -697,9 +654,6 @@ private:
             *type_out = type_name;
         }
 
-        std::cout << "---- add ----" << std::endl;
-        std::cout << "type: " << type.getAsString() << std::endl;
-
         return u::add_local_var(scope_, type_name, info_.nm().gen_var("temp"), node);
     }
 
@@ -733,8 +687,6 @@ private:
     xcml::expr_ptr do_integral_cast(clang::CastExpr const* expr) {
         PUSH_CONTEXT(expr);
 
-        std::cout << "---- do_integral_cast ----" << std::endl;
-
         if (expr->getCastKind() == clang::CK_NullToPointer) {
             return u::lit(0);
         }
@@ -752,12 +704,8 @@ private:
     xcml::expr_ptr do_base_cast(clang::CastExpr const* expr) {
         PUSH_CONTEXT(expr);
 
-        std::cout << "---- do_base_cast ----" << std::endl;
-
         auto type = expr->getType();
         auto sub_type = expr_type(expr->getSubExpr());
-        std::cout << "type: " << type.getAsString() << std::endl;
-        std::cout << "sub_type: " << sub_type.getAsString() << std::endl;
         auto node = xcml::new_cast_expr();
         node->value = visit_expr(expr->getSubExpr());
         node->to_base = true;
@@ -782,7 +730,6 @@ private:
 
 xcml::expr_ptr visitor_base::visit_expr(xcml::compound_stmt_ptr const& scope,
                                         clang::Expr const* expr, bool direct, context const&) {
-    std::cout << "---- visit_expr ----" << std::endl;
     expr_visitor vis(info_, scope, current_kernel_, current_func_, current_is_kernel_);
     return vis.Visit(expr, direct);
 }
@@ -792,8 +739,6 @@ xcml::expr_ptr visitor_base::visit_expr_ref(xcml::compound_stmt_ptr const& scope
     PUSH_CONTEXT(expr);
 
     // TODO: Need to improve for more generic.
-    std::cout << "---- visit_expr_ref ----" << std::endl;
-
     if (auto const* me = clang::dyn_cast<clang::MemberExpr>(expr)) {
         expr_visitor vis(info_, scope, current_kernel_, current_func_, current_is_kernel_);
 

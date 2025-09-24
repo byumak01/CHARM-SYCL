@@ -135,9 +135,6 @@ struct visitor_base {
                               bool direct, context const& = context());
 
     xcml::expr_ptr visit_expr_val(clang::Expr const* expr, context const& = context()) {
-        std::cout << "---- visit_expr_val ----" << std::endl;
-        std::cout << "Expression type: " << expr->getType().getAsString() << std::endl;
-        std::cout << "Expression kind: " << expr->getStmtClassName() << std::endl;
         return visit_expr_val(scope_, expr);
     }
 
@@ -147,7 +144,6 @@ struct visitor_base {
         auto const type = expr_type(expr);
 
         if (!type.isNull() && type->isReferenceType()) {
-            std::cout << "deref called" << std::endl;
             return deref(node);
         }
         return node;
@@ -209,11 +205,11 @@ struct visitor_base {
                                             clang::FunctionDecl const* decl);
 
 protected:
-    /*
+    
     void push_expr(clang::Expr const* expr, xcml::expr_ptr const& node) {
         push_expr(scope_, expr, node);
     }
-    */
+    /*
     void push_expr(clang::Expr const* expr, xcml::expr_ptr const& node) {
     std::cout << "\n=== PUSH_EXPR DEBUG ===" << std::endl;
     
@@ -242,7 +238,7 @@ protected:
         
         // Print the AST structure for this expression
         std::cout << "  AST Dump:" << std::endl;
-        expr->dump();
+        //expr->dump();
     } else {
         std::cout << "Clang Expression: NULL" << std::endl;
     }
@@ -287,6 +283,7 @@ protected:
     // Call the original function
     push_expr(scope_, expr, node);
 }
+    */
     template <class Node, class HasLoc>
     void set_loc(Node const& node, HasLoc const* expr) {
         auto& sm = ast_.getSourceManager();

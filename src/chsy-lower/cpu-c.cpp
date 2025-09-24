@@ -90,7 +90,6 @@ struct transform_kernel_wrapper final : xcml::recursive_visitor<transform_kernel
     xcml::node_ptr visit_kernel_wrapper_decl(xcml::kernel_wrapper_decl_ptr const& node,
                                              scope_ref) {
         using namespace xcml::utils;
-        std::cout << "---- cpu-c.cpp transform_kernel_wrapper ----" << std::endl;
         auto ft = create_function_type();
         ft->return_type = "void";
         auto const args = add_param(ft, get_void_ptr_ptr(), gen_var("args"));

@@ -303,30 +303,20 @@ private:
 
         for (auto it = l.begin(); it != l.end(); ++it) {
             auto const type = it->decl()->getType();
-            std::cout << "\033[32m-----------------\033[0m" << std::endl;
-            std::cout << "transform.cpp" << std::endl;
-            
-            std::cout << "\033[32mit original type:\033[0m " << type.getAsString() << std::endl;
-                    
             if(is_primitive_pointer_type(type) ){
-                std::cout << "Original type: " << type.getAsString() << "Canonical type: " << type.getCanonicalType().getAsString() << std::endl;
             
                 xcml::expr_ptr primitive_ptr = arg_ptr;
                 for (auto const* f : it->path()) {
-                    std::cout << "Processing field: " << l.get_field_name(f) << "Field type: " << f->getType().getAsString() << std::endl;
                     primitive_ptr = make_member_ref(primitive_ptr, l.get_field_name(f));
                 
                     if (!f->getType()->isPointerType()) {
-                        //std::cout << "Adding addr_of for non-pointer field" << std::endl;
                         primitive_ptr = make_addr_of(primitive_ptr);
                     }
                 }
         
                 auto const& ptr_param = info_.nm().gen_var("ptr");
-                std::cout << "ptr_param: " << ptr_param << std::endl;
                 add_param(wrapper, info_.define_type(type), ptr_param);
         
-                std::cout << "About to generate assignment" << std::endl;
                 auto ptr_ref = primitive_ptr;
                 push_expr(wrapper->body, assign_expr(ptr_ref, make_var_ref(ptr_param)));
             }               
@@ -342,7 +332,6 @@ private:
                 }
 
                 auto const& ptr_param = info_.nm().gen_var("ptr");
-                std::cout << "ptr_param: " << ptr_param << std::endl;
                 add_param(wrapper, info_.define_type(ctx.VoidPtrTy), ptr_param);
 
                 auto ptr_ref = make_member_ref(acc_ptr, "ptr");
@@ -415,9 +404,6 @@ private:
         if (!type->isPointerType() && !type->isReferenceType()) {
             type.removeLocalConst();
         }
-
-        std::cout << "---- transform.cpp add_local_var ----" << std::endl;
-        std::cout << "name: " << name << std::endl;
 
         return xcml::utils::add_local_var(scope, info_.define_type(type), name, init);
     }

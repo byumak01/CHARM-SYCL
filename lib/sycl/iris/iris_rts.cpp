@@ -459,8 +459,6 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
     using kernel_t = typename IRIS::kernel_t;
 
     explicit task_impl() {
-        std::cout << "---------------------------" << std::endl;
-        std::cout << "new iris task_impl created" << std::endl;
         task_.emplace();
         if (IRIS::iris_task_create(&*task_) != IRIS::SUCCESS) {
             throw std::runtime_error("iris_task_create() failed");
@@ -587,7 +585,6 @@ struct task_impl final : rts::task, std::enable_shared_from_this<task_impl<IRIS>
     /* ----------- */
 
     void set_param(void const* ptr, size_t size) override {
-        std::cout << "set param iris rts called with arg_idx_ (before inc.): " << arg_idx_ << std::endl;
         if (kernel_) {
              if (IRIS::iris_kernel_setarg(*kernel_, arg_idx_, size, const_cast<void*>(ptr)) !=
                 IRIS::SUCCESS) {

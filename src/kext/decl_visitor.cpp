@@ -17,9 +17,6 @@ struct decl_visitor : decl_visitor_base<decl_visitor, void> {
         auto const& name = info_.rename_sym(decl);
         auto const& type = info_.define_type(var_type(decl));
 
-        std::cout << "---- decl_visitor ----" << std::endl;
-        std::cout << "name: " << name << std::endl;
-        std::cout << "type: " << type << std::endl;
  
         if (auto const* init = decl->getInit()) {
             if (auto const* list = clang::dyn_cast<clang::InitListExpr>(init)) {
@@ -180,11 +177,6 @@ struct decl_visitor : decl_visitor_base<decl_visitor, void> {
             auto const l = layout(ctx, fn_record, true);
             for (auto it = l.begin(); it != l.end(); ++it) {
                 auto const type = it->decl()->getType();
-                std::cout << "\033[32m-----------------\033[0m" << std::endl;
-                std::cout << "decl_visitor.cpp" << std::endl;
-            
-                std::cout << "\033[32mit original type:\033[0m " << type.getAsString() << std::endl;
-
                 if (accessor_type acc_type;
                     ::is_accessor(type, acc_type) && acc_type == accessor_type::LOCAL) {
                     static auto const* const BASE_FN = "__charm_sycl_local_memory_base";

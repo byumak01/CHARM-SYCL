@@ -33,6 +33,8 @@ template <class T>
 char const* HIP_UTILS = R"(
 #include <hip/device_functions.h>
 #include <stdint.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wundefined-internal"
 
 [[maybe_unused]] inline __device__ bool __charm_sycl_is_leader_lane() {
     return __lane_id() == 0;

@@ -115,7 +115,7 @@ struct Visitor : clang::RecursiveASTVisitor<Visitor> {
                 exec(expr, range, offset, kernel_name, ctor);
             } else {
                 fmt::print(stderr, "{}:{}:\nNot supported:\n", __FILE__, __LINE__);
-                expr->dumpColor();
+                //expr->dumpColor();
                 exit(1);
             }
         }

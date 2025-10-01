@@ -56,7 +56,7 @@ result<io::file> compile_kernel_cuda(config const& cfg, io::file const& input, c
     if (!cfg.cuda_arch.empty()) {
         cmd.push_back("-arch=" + cfg.cuda_arch);
     } else {
-        cmd.push_back("-arch=sm_60");
+        cmd.push_back("-arch=sm_87");
     }
 
     cmd.push_back(std::string("-O") + cfg.opt_level);

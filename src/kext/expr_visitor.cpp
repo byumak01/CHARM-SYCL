@@ -157,6 +157,14 @@ public:                                                                         
     xcml::expr_ptr VisitCallExpr(clang::CallExpr const* expr, bool direct = false,
                                  context const& = context()) {
         PUSH_CONTEXT(expr);
+            // Check if this is a std::move call
+        if (auto const* decl = expr->getDirectCallee()) {
+            if (decl->getQualifiedNameAsString().find("std::move") != std::string::npos ||
+                decl->getNameAsString().find("move") != std::string::npos) {
+                // For move calls, always return direct to avoid temporaries
+                return make_call_expr(expr);
+            }
+        }
         return direct ? make_call_expr(expr) : add(expr, make_call_expr(expr));
     }
 

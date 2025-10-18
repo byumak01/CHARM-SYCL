@@ -159,10 +159,6 @@ public:                                                                         
                                  context const& = context()) {
         PUSH_CONTEXT(expr);
 
-        if (is_zero_dim_local_accessor_conversion(expr)) {
-            std::cout << "0D accessor conversion call - returning direct" << std::endl;
-            return make_call_expr(expr);  // Don't create temp, return call directly
-        }
         /*
             // Check if this is a std::move call
         if (auto const* decl = expr->getDirectCallee()) {
@@ -365,7 +361,7 @@ public:                                                                         
             auto const* fd = it->second;
             return field_ref(this_ref(), fd);
         }
-        
+
         return var_ref(vd);
     }
 

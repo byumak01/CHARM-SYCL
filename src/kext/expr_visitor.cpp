@@ -9,7 +9,8 @@ struct expr_visitor final : stmt_visitor_base<expr_visitor, xcml::expr_ptr, bool
                                       clang::Expr const* rhs) {
         auto node = u::new_assign_expr();
         node->lhs = asg_op_lhs(lhs);                 
-        node->rhs = visit_expr_val_with_deref_check(rhs, "assign_expr");
+        /*node->rhs = visit_expr_val_with_deref_check(rhs, "assign_expr");*/
+        node->rhs = visit_expr_val(rhs);
         push_expr(expr, node);
         return node->lhs;
     }
@@ -55,10 +56,10 @@ private:                                                                        
     xcml::expr_ptr create_##xcml_type(clang::Expr const* expr, clang::Expr const* lhs, \
                                       clang::Expr const* rhs, EXTRA_ARGS) {            \
         auto node = u::new_##xcml_type();                                              \
-        node->lhs = visit_expr_val_with_deref_check(lhs, #xcml_type);                 \
-        node->rhs = visit_expr_val_with_deref_check(rhs, #xcml_type);                 \
-        /*node->lhs = visit_expr_val(lhs);*/ \
-        /*node->rhs = visit_expr_val(rhs);*/ \
+        /*node->lhs = visit_expr_val_with_deref_check(lhs, #xcml_type);*/                 \
+        /*node->rhs = visit_expr_val_with_deref_check(rhs, #xcml_type);  */               \
+        node->lhs = visit_expr_val(lhs); \
+        node->rhs = visit_expr_val(rhs); \
         return add(expr, node);                                                        \
     }                                                                                  \
                                                                                        \
@@ -158,17 +159,6 @@ public:                                                                         
     xcml::expr_ptr VisitCallExpr(clang::CallExpr const* expr, bool direct = false,
                                  context const& = context()) {
         PUSH_CONTEXT(expr);
-
-        /*
-            // Check if this is a std::move call
-        if (auto const* decl = expr->getDirectCallee()) {
-            if (decl->getQualifiedNameAsString().find("std::move") != std::string::npos ||
-                decl->getNameAsString().find("move") != std::string::npos) {
-                // For move calls, always return direct to avoid temporaries
-                return make_call_expr(expr);
-            }
-        }
-        */
         return direct ? make_call_expr(expr) : add(expr, make_call_expr(expr));
     }
 

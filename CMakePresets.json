@@ -1,0 +1,47 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_FLAGS": "-w",
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_COLOR_DIAGNOSTICS": "OFF",
+        "USE_IRIS": "ON",
+        "IRIS_DIR": "$env{HOME}/iris/build/src/runtime"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "default",
+      "configuration": "Debug",
+      "jobs": 0,
+      "verbose": false
+    },
+    {
+      "name": "release",
+      "configurePreset": "default",
+      "configuration": "Release",
+      "jobs": 0,
+      "verbose": false
+    },
+    {
+      "name": "relwithdebinfo",
+      "configurePreset": "default",
+      "configuration": "RelWithDebInfo",
+      "jobs": 0,
+      "verbose": false
+    }
+  ]
+}

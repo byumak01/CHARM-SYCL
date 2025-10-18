@@ -9,7 +9,7 @@ struct expr_visitor final : stmt_visitor_base<expr_visitor, xcml::expr_ptr, bool
                                       clang::Expr const* rhs) {
         auto node = u::new_assign_expr();
         node->lhs = asg_op_lhs(lhs);
-        node->rhs = visit_expr_val(rhs);
+        node->rhs = visit_expr_val_with_deref_check(rhs, "assign_expr");
         push_expr(expr, node);
         return node->lhs;
     }

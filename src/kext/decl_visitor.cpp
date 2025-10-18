@@ -65,19 +65,7 @@ struct decl_visitor : decl_visitor_base<decl_visitor, void> {
                     scope_, type, name,
                     init_type->isReferenceType() ? init_expr : u::make_addr_of(init_expr));
             } else {
-                auto init_expr = visit_expr(init);
-                 
-                auto decl_type = decl->getType();
-                auto init_type = init->getType();
-                 
-                if (!decl_type->isPointerType() && init_type->isPointerType()) {
-                    std::cout << "VarDecl type mismatch: " << init_type.getAsString() 
-                              << " -> " << decl_type.getAsString() 
-                              << ", adding dereference" << std::endl;
-                    init_expr = u::make_deref(init_expr);
-                }
-                
-                u::add_local_var(scope_, type, name, init_expr);
+                u::add_local_var(scope_, type, name, visit_expr(init));
             }
         } else {
             u::add_local_var(scope_, type, name);

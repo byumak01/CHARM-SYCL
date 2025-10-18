@@ -361,7 +361,26 @@ public:                                                                         
             return field_ref(this_ref(), fd);
         }
 
-        return var_ref(vd);
+        auto result = var_ref(vd);
+    
+        // NEW: Check if we're using a temp variable that came from a reference type
+        // If the variable's stored type is pointer but the expression type is not, dereference
+        auto expr_type = expr->getType();
+        if (auto var_decl = clang::dyn_cast<clang::VarDecl>(vd)) {
+            auto var_type = var_decl->getType();
+        
+            // If variable is int* but we're using it as int, dereference
+            if (var_type->isPointerType() && !expr_type->isPointerType() && 
+                !expr_type->isReferenceType()) {
+                std::cout << "VisitDeclRefExpr: Auto-dereferencing temp variable " 
+                        << vd->getNameAsString() << std::endl;
+                return u::make_deref(result);
+            }
+        }
+    
+        return result;
+
+        //return var_ref(vd);
     }
 
     xcml::expr_ptr VisitMaterializeTemporaryExpr(clang::MaterializeTemporaryExpr const* expr,

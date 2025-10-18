@@ -8,21 +8,8 @@ struct expr_visitor final : stmt_visitor_base<expr_visitor, xcml::expr_ptr, bool
     xcml::expr_ptr create_assign_expr(clang::Expr const* expr, clang::Expr const* lhs,
                                       clang::Expr const* rhs) {
         auto node = u::new_assign_expr();
-        node->lhs = asg_op_lhs(lhs);
-                                    
-        auto lhs_type = lhs->getType();
-        auto rhs_type = rhs->getType();
-                                    
-        // If types don't match (int vs int*), add dereference
-        if (!lhs_type->isPointerType() && rhs_type->isPointerType()) {
-            std::cout << "Type mismatch: " << rhs_type.getAsString() 
-                      << " -> " << lhs_type.getAsString() 
-                      << ", adding dereference" << std::endl;
-            node->rhs = u::make_deref(visit_expr_val(rhs));
-        } else {
-            node->rhs = visit_expr_val_with_deref_check(rhs, "assign_expr");
-        }
-        
+        node->lhs = asg_op_lhs(lhs);                 
+        node->rhs = visit_expr_val_with_deref_check(rhs, "assign_expr");
         push_expr(expr, node);
         return node->lhs;
     }

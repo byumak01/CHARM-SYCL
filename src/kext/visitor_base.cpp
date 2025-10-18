@@ -142,7 +142,7 @@ xcml::function_call_ptr visitor_base::make_call_expr(clang::Expr const* expr,
     auto const* meth =
         oc ? clang::dyn_cast<clang::CXXMethodDecl>(oc->getCalleeDecl()) : nullptr;
     std::unordered_set<clang::Expr const*> ref_args, record_args;
-
+    /*
     // In make_call_expr(), before calling define_function()
     if (decl && decl->getQualifiedNameAsString().find("std::move") != std::string::npos) {
         // Create direct std::move call instead of custom function
@@ -155,6 +155,7 @@ xcml::function_call_ptr visitor_base::make_call_expr(clang::Expr const* expr,
         }
         return call;
     }
+    */
 
     for (size_t i = 0; i < decl->getNumParams(); i++) {
         auto const arg = get_arg(expr, meth ? i + 1 : i);

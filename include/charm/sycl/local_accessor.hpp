@@ -43,18 +43,18 @@ public:
 
     range<Dimensions> get_range() const;
 
-    
+    /*
     template <int _Dim = Dimensions, class = std::enable_if_t<_Dim == 0>>
     inline CHARM_SYCL_INLINE operator value_type() const {
         return *this->get_pointer();
     }
+    */
     
-    /*
     template <int _Dim = Dimensions, class = std::enable_if_t<_Dim == 0>>
     inline CHARM_SYCL_INLINE operator reference() const {
         return *this->get_pointer();
     }
-    */
+    
 
     template <int _Dim = Dimensions, class = std::enable_if_t<_Dim == 0>>
     inline CHARM_SYCL_INLINE const local_accessor& operator=(const value_type& rhs) const {
@@ -62,23 +62,13 @@ public:
         return *this;
     }
 
-    //#pragma GCC diagnostic push
-    //#pragma GCC diagnostic ignored "-Wundefined-internal"
     template <int _Dim = Dimensions, class = std::enable_if_t<_Dim == 0>>
     inline CHARM_SYCL_INLINE const local_accessor& operator=(const value_type&& rhs) const {
         //*this->get_pointer() = static_cast<std::remove_reference_t<decltype(rhs)>>(rhs);
         *this->get_pointer() = std::move(rhs);
         return *this;
     }
-    //#pragma GCC diagnostic pop
-    /*
-    template <int *Dim = Dimensions, class = std::enable_if_t<*Dim == 0>>
-    inline CHARM_SYCL_INLINE const local_accessor& operator=(value_type&& rhs) const {
-        value_type* ptr = this->get_pointer();
-        *ptr = rhs;  // Direct assignment, letting the compiler handle the move
-        return *this;
-    }
-    */
+
     template <int _Dim = Dimensions, class = std::enable_if_t<(_Dim > 0)>>
     inline CHARM_SYCL_INLINE reference operator[](item<Dimensions> const& index) const {
         if constexpr (Dimensions == 1) {

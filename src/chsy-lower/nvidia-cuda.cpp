@@ -462,11 +462,11 @@ xcml::xcml_program_node_ptr lower_nvidia_cuda(xcml::xcml_program_node_ptr const&
     auto inc = xcml::new_cpp_include();
     inc->name = "cuda_runtime.h";
     prg->preamble.push_front(inc);
-
+    /*
     auto inc2 = xcml::new_cpp_include();
     inc2->name = "utility";
     prg->preamble.push_front(inc2);
-
+    */
     return do_lower(utils::target::NVIDIA_CUDA, prg);
 }
 
@@ -474,10 +474,10 @@ xcml::xcml_program_node_ptr lower_amd_hip(xcml::xcml_program_node_ptr const& prg
     auto inc = xcml::new_cpp_include();
     inc->name = "hip/hip_runtime.h";
     prg->preamble.push_front(inc);
-
+    /*
     auto inc2 = xcml::new_cpp_include();
     inc2->name = "utility";
     prg->preamble.push_front(inc2);
-
+    */
     return do_lower(utils::target::AMD_HIP, prg);
 }

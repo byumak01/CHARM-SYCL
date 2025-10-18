@@ -151,12 +151,12 @@ struct visitor_base {
 
     xcml::expr_ptr visit_expr_val_with_deref_check(clang::Expr const* expr, std::string op_type) {
         auto result = visit_expr_val(expr);
-        if (op_type=="plus_expr"){
+        //if (op_type=="plus_expr"){
             if (is_zero_dim_local_accessor_conversion(expr)) {
                 std::cout << "Dereferencing 0D local accessor in binary operation" << std::endl;
                 result = u::make_deref(result);
             }
-        }
+        //}
         return result;
     }
 
@@ -175,11 +175,8 @@ struct visitor_base {
                                 if (auto record = obj_type->getAsCXXRecordDecl()) {
                                     if (auto template_decl = clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(record)) {
                                         if (template_decl->getSpecializedTemplate()->getName() == "local_accessor") {
-                                            // Check dimension parameter
-                                            std::cout << "check: " << std::endl;
                                             auto const& args = template_decl->getTemplateArgs();
                                             if (args.size() > 1 && args[1].getKind() == clang::TemplateArgument::Integral) {
-                                                std::cout << "halo" << std::endl;
                                                 return args[1].getAsIntegral().getExtValue() == 0;
                                             }
                                         }

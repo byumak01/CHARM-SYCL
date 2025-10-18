@@ -55,10 +55,10 @@ private:                                                                        
     xcml::expr_ptr create_##xcml_type(clang::Expr const* expr, clang::Expr const* lhs, \
                                       clang::Expr const* rhs, EXTRA_ARGS) {            \
         auto node = u::new_##xcml_type();                                              \
-        /*node->lhs = visit_expr_val_with_deref_check(lhs, #xcml_type); */                 \
-        /*node->rhs = visit_expr_val_with_deref_check(rhs, #xcml_type);*/                 \
-        node->lhs = visit_expr_val(lhs); \
-        node->rhs = visit_expr_val(rhs); \
+        node->lhs = visit_expr_val_with_deref_check(lhs, #xcml_type);                 \
+        node->rhs = visit_expr_val_with_deref_check(rhs, #xcml_type);                 \
+        /*node->lhs = visit_expr_val(lhs);*/ \
+        /*node->rhs = visit_expr_val(rhs);*/ \
         return add(expr, node);                                                        \
     }                                                                                  \
                                                                                        \
@@ -157,6 +157,7 @@ public:                                                                         
     xcml::expr_ptr VisitCallExpr(clang::CallExpr const* expr, bool direct = false,
                                  context const& = context()) {
         PUSH_CONTEXT(expr);
+        /*
             // Check if this is a std::move call
         if (auto const* decl = expr->getDirectCallee()) {
             if (decl->getQualifiedNameAsString().find("std::move") != std::string::npos ||
@@ -165,6 +166,7 @@ public:                                                                         
                 return make_call_expr(expr);
             }
         }
+        */
         return direct ? make_call_expr(expr) : add(expr, make_call_expr(expr));
     }
 

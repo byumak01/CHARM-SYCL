@@ -162,21 +162,31 @@ struct visitor_base {
 
     bool is_zero_dim_local_accessor_conversion(clang::Expr const* expr) {
         if (auto cast_expr = clang::dyn_cast<clang::ImplicitCastExpr>(expr)) {
+            std::cout << "check1" << std::endl;
             if (cast_expr->getCastKind() == clang::CK_LValueToRValue) {
+                std::cout << "check2" << std::endl;
                 if (auto sub_cast = clang::dyn_cast<clang::ImplicitCastExpr>(cast_expr->getSubExpr())) {
+                    std::cout << "check3" << std::endl;
                     if (sub_cast->getCastKind() == clang::CK_UserDefinedConversion) {
+                        std::cout << "check4" << std::endl;
                         // NOW CHECK: Is this actually a 0D local_accessor?
                         if (auto member_call = clang::dyn_cast<clang::CXXMemberCallExpr>(sub_cast->getSubExpr())) {
+                            std::cout << "check5" << std::endl;
                             if (auto method = clang::dyn_cast<clang::CXXConversionDecl>(member_call->getMethodDecl())) {
+                                std::cout << "check6" << std::endl;
                                 // Check if the object is a 0D local_accessor
                                 auto obj_expr = member_call->getImplicitObjectArgument();
                                 auto obj_type = obj_expr->getType();
                                 
                                 if (auto record = obj_type->getAsCXXRecordDecl()) {
+                                    std::cout << "check7" << std::endl;
                                     if (auto template_decl = clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(record)) {
+                                        std::cout << "check8" << std::endl;
                                         if (template_decl->getSpecializedTemplate()->getName() == "local_accessor") {
+                                            std::cout << "check9" << std::endl;
                                             auto const& args = template_decl->getTemplateArgs();
                                             if (args.size() > 1 && args[1].getKind() == clang::TemplateArgument::Integral) {
+                                                std::cout << "check10" << std::endl;
                                                 return args[1].getAsIntegral().getExtValue() == 0;
                                             }
                                         }

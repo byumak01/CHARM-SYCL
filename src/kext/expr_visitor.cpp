@@ -73,7 +73,8 @@ public:                                                                         
         PUSH_CONTEXT(expr);                                               \
         auto node = u::new_##xcml_type();                                 \
         node->lhs = asg_op_lhs(expr->getLHS());                           \
-        node->rhs = visit_expr_val(expr->getRHS());                       \
+        node->rhs = visit_expr_val_with_deref_check(expr->getRHS(), #xcml_type) \                         
+        /*node->rhs = visit_expr_val(expr->getRHS());  */                     \
         push_expr(expr, node);                                            \
         return node->lhs;                                                 \
     }

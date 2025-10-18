@@ -158,6 +158,11 @@ public:                                                                         
     xcml::expr_ptr VisitCallExpr(clang::CallExpr const* expr, bool direct = false,
                                  context const& = context()) {
         PUSH_CONTEXT(expr);
+
+        if (is_zero_dim_local_accessor_conversion(expr)) {
+            std::cout << "0D accessor conversion call - returning direct" << std::endl;
+            return make_call_expr(expr);  // Don't create temp, return call directly
+        }
         /*
             // Check if this is a std::move call
         if (auto const* decl = expr->getDirectCallee()) {
@@ -360,27 +365,8 @@ public:                                                                         
             auto const* fd = it->second;
             return field_ref(this_ref(), fd);
         }
-
-        auto result = var_ref(vd);
-    
-        // NEW: Check if we're using a temp variable that came from a reference type
-        // If the variable's stored type is pointer but the expression type is not, dereference
-        auto expr_type = expr->getType();
-        if (auto var_decl = clang::dyn_cast<clang::VarDecl>(vd)) {
-            auto var_type = var_decl->getType();
         
-            // If variable is int* but we're using it as int, dereference
-            if (var_type->isPointerType() && !expr_type->isPointerType() && 
-                !expr_type->isReferenceType()) {
-                std::cout << "VisitDeclRefExpr: Auto-dereferencing temp variable " 
-                        << vd->getNameAsString() << std::endl;
-                return u::make_deref(result);
-            }
-        }
-    
-        return result;
-
-        //return var_ref(vd);
+        return var_ref(vd);
     }
 
     xcml::expr_ptr VisitMaterializeTemporaryExpr(clang::MaterializeTemporaryExpr const* expr,

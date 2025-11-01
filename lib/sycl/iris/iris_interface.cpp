@@ -71,10 +71,16 @@ int32_t (*iris_interface_20000::iris_task_dmem_flush_out_ptr)(typename task_t::n
                                                               typename mem_t::native);
 int32_t (*iris_interface_20000::iris_data_mem_update_ptr)(typename mem_t::native, void*);
 
+void* iris_interface_20000::distributed_iris_handle_;
+
 void* iris_interface_20000::handle_;
 
 result<void> iris_interface_20000::init() {
     if (handle_) {
+        return {};
+    }
+
+    if (distributed_iris_handle_) {
         return {};
     }
     
@@ -112,6 +118,28 @@ result<void> iris_interface_20000::init() {
     CHECK_ERROR(load_func(handle_, iris_task_dmem_flush_out_ptr, "iris_task_dmem_flush_out"));
     CHECK_ERROR(load_func(handle_, iris_data_mem_update_ptr, "iris_data_mem_update"));
 
+    distributed_iris_handle_ = dlopen("libd_iris.so", RTLD_NOW);
+    if (!distributed_iris_handle_) {
+        return make_errorf("Distributed IRIS Error: cannot open the D-IRIS diriver: {}",
+                           dlerror());
+    }
+
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_mem_create_ptr, "iris_mem_create"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_create_ptr, "iris_task_create"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_kernel_object_ptr,
+                          "iris_task_kernel_object"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_kernel_create_ptr, "iris_kernel_create"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_kernel_setmem_off_ptr, "iris_kernel_setmem_off"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_kernel_setarg_ptr, "iris_kernel_setarg"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_submit_ptr, "iris_task_submit"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_depend_ptr, "iris_task_depend"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_synchronize_ptr, "iris_synchronize"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_finalize_ptr, "iris_finalize"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_d2h_ptr, "iris_task_d2h"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_h2d_ptr, "iris_task_h2d"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_mem_release_ptr, "iris_mem_release"));
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_release_ptr, "iris_task_release"));
+
     return {};
 }
 
@@ -142,6 +170,10 @@ void iris_interface_20000::close() {
 
     if (auto h = std::exchange(handle_, nullptr)) {
         dlclose(h);
+    }
+
+    if (auto distributed_iris_handle_tmp{std::exchange(distributed_iris_handle_, nullptr)}) {
+        dlclose(distributed_iris_handle_tmp);
     }
 }
 

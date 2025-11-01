@@ -15,7 +15,7 @@ cmake_dependent_option(CHARM_SYCL_IRIS_IS_REQUIRED "Raise error if IRIS is not f
 
 # option(CHARM_SYCL_LINK_STATIC_CUDART "Link static CUDA runtime library (default: YES)" YES)
 cmake_dependent_option(CHARM_SYCL_CUDA_IS_REQUIRED "Raise error if CUDA is not found. (default: NO)" NO "NOT CSCC_PORTABLE_MODE" OFF)
-option(CHARM_SYCL_USE_CLANG_DYLIB "Link clang dylib instead of individual static libraries (default: YES)" YES)
+option(CHARM_SYCL_USE_CLANG_DYLIB "Link clang dylib instead of individual static libraries (default: YES)" NO)
 set(CHARM_SYCL_RUNTIME_STDLIB "" CACHE STRING "set value of the -stdlib= option for the SYCL runtime library. (default: the option is not used)")
 
 cmake_dependent_option(CHARM_SYCL_HIP_IS_REQUIRED "Raise error if HIP is not found. (default: NO)" NO "NOT CSCC_PORTABLE_MODE" OFF)

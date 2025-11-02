@@ -92,6 +92,7 @@ result<void> iris_interface_20000::init() {
     }
 
     CHECK_ERROR(load_func(handle_, iris_device_count_ptr, "iris_device_count"));
+    std::cout << "check 1" << std::endl;
     CHECK_ERROR(load_func(handle_, iris_device_info_ptr, "iris_device_info"));
     CHECK_ERROR(load_func(handle_, iris_env_set_ptr, "iris_env_set"));
     CHECK_ERROR(load_func(handle_, iris_finalize_ptr, "iris_finalize"));
@@ -108,8 +109,10 @@ result<void> iris_interface_20000::init() {
     CHECK_ERROR(load_func(handle_, iris_task_h2d_ptr, "iris_task_h2d"));
     CHECK_ERROR(load_func(handle_, iris_task_cmd_reset_mem_ptr, "iris_task_cmd_reset_mem"));
     CHECK_ERROR(load_func(handle_, iris_task_info_ptr, "iris_task_info"));
+    std::cout << "check 2" << std::endl;
     CHECK_ERROR(load_func(handle_, iris_task_kernel_object_ptr, "iris_task_kernel_object"));
     CHECK_ERROR(load_func(handle_, iris_task_kernel_object_lmem_ptr, "iris_task_kernel_object_lmem"));
+    std::cout << "check 3" << std::endl;
     CHECK_ERROR(load_func(handle_, iris_task_release_ptr, "iris_task_release"));
     CHECK_ERROR(load_func(handle_, iris_task_retain_ptr, "iris_task_retain"));
     CHECK_ERROR(load_func(handle_, iris_task_submit_ptr, "iris_task_submit"));
@@ -117,28 +120,38 @@ result<void> iris_interface_20000::init() {
     CHECK_ERROR(load_func(handle_, iris_data_mem_create_ptr, "iris_data_mem_create"));
     CHECK_ERROR(load_func(handle_, iris_task_dmem_flush_out_ptr, "iris_task_dmem_flush_out"));
     CHECK_ERROR(load_func(handle_, iris_data_mem_update_ptr, "iris_data_mem_update"));
+    std::cout << "check 4" << std::endl;
 
     distributed_iris_handle_ = dlopen("libd_iris.so", RTLD_NOW);
+    std::cout << "check 4.5" << std::endl;
     if (!distributed_iris_handle_) {
+        std::cout << "check 4.6" << std::endl;
         return make_errorf("Distributed IRIS Error: cannot open the D-IRIS diriver: {}",
                            dlerror());
     }
-
+    std::cout << "check 5" << std::endl;
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_mem_create_ptr, "iris_mem_create"));
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_create_ptr, "iris_task_create"));
+    std::cout << "check 6" << std::endl;
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_kernel_object_ptr,
                           "iris_task_kernel_object"));
+    std::cout << "check 7" << std::endl;
+    CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_kernel_object_lmem_ptr,
+                          "iris_task_kernel_object_lmem"));
+    std::cout << "check 8" << std::endl;
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_kernel_create_ptr, "iris_kernel_create"));
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_kernel_setmem_off_ptr, "iris_kernel_setmem_off"));
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_kernel_setarg_ptr, "iris_kernel_setarg"));
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_submit_ptr, "iris_task_submit"));
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_depend_ptr, "iris_task_depend"));
+    std::cout << "check 9" << std::endl;
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_synchronize_ptr, "iris_synchronize"));
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_finalize_ptr, "iris_finalize"));
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_d2h_ptr, "iris_task_d2h"));
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_h2d_ptr, "iris_task_h2d"));
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_mem_release_ptr, "iris_mem_release"));
     CHECK_ERROR(load_func(distributed_iris_handle_, iris_task_release_ptr, "iris_task_release"));
+    std::cout << "check 10" << std::endl;
 
     return {};
 }
